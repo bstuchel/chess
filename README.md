@@ -1,2 +1,2 @@
 # chess
-Chess app built on python using pygame
+Chess app built in python using pygame
