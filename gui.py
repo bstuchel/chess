@@ -1,14 +1,11 @@
 """ File: gui.py
 This file contains the GUI for the chess application
 """
-
 import pygame
 
 
 class GUI():
     # Define Colors
-    # GRAY = (160, 160, 160)
-    # WHITE = (255, 255, 255)
     DARK_GRAY = (49, 46, 43)
     GREEN = (118, 150, 86)
     CREAM = (238, 238, 210)
@@ -32,6 +29,7 @@ class GUI():
         self.game_surface = self.create_game_surface()
         self.board = board
         self.set_sprites()
+        self.picked_piece = None
 
     def create_display(self):
         """ Creates the pygame display and sets the caption """
@@ -72,16 +70,27 @@ class GUI():
             y_location -= self.SQUARE_SIZE
         return game_surface
 
-    def update_display(self):
-        """ Updates the display by writing the game_surface over it. """
+    def update_display(self, pos):
+        """ Updates the display by clearing the display to the blank board 
+        surface.  Pieces are then drawn to the board including pieces held by 
+        the user.
+        pos: Tuple containing the x and y coordinates of the cursor
+        """
         self.dis.blit(self.game_surface, (0, 0))
 
         # Draw pieces on board
         for i in range(8):
             for j in range(8):
                 if self.board.board[i][j]:
-                    self.game_surface.blit(self.board.board[i][j].sprite, 
+                    self.dis.blit(self.board.board[i][j].sprite, 
                             (j * self.SQUARE_SIZE, i * self.SQUARE_SIZE))
+
+        # Draw piece in hand
+        if self.picked_piece:
+            x, y = pos
+            x -= self.SQUARE_SIZE // 2
+            y -= self.SQUARE_SIZE // 2
+            self.dis.blit(self.picked_piece.sprite, (x, y))
 
         pygame.display.update()
 
@@ -92,3 +101,19 @@ class GUI():
                 if square:
                     filepath = f"res/img/{self.SQUARE_SIZE}/{square.filename}"
                     square.sprite = pygame.image.load(filepath)
+
+    def pick_piece(self, pos):
+        """ Pick up a pieces given the square coordinates """
+        rank = pos[1] // self.SQUARE_SIZE
+        file = pos[0] // self.SQUARE_SIZE
+        if file < 8 and rank < 8 and self.board.board[rank][file]:
+            self.picked_piece = self.board.board[rank][file]
+            self.board.board[rank][file] = None
+
+    def put_piece(self, pos):
+        """ Place a piece at the given coordinates """
+        rank = pos[1] // self.SQUARE_SIZE
+        file = pos[0] // self.SQUARE_SIZE
+        if file < 8 and rank < 8:
+            self.board.board[rank][file] = self.picked_piece
+            self.picked_piece = None

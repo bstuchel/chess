@@ -2,8 +2,6 @@
 This file contains the Piece class and subclasses for each piece type
 """
 
-import pygame
-
 
 class Piece():
     def __init__(self, isWhite):

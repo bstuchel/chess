@@ -1,7 +1,6 @@
 """ File: board.py
 This file contains the board class that controls the logic for the chess game
 """
-
 from piece import Pawn, Knight, Bishop, Rook, Queen, King
 
 
@@ -13,6 +12,9 @@ class Board():
         self.set_board()
 
     def set_board(self):
+        """ Sets the board by creating pieces and placing them in their 
+        starting squares 
+        """
         self.board[0][0] = Rook(False)
         self.board[0][1] = Knight(False)
         self.board[0][2] = Bishop(False)

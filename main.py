@@ -12,7 +12,7 @@ from gui import GUI
 def main():
     board = Board()
     gui = GUI(board)
-    gui.update_display()
+    gui.update_display((0, 0))
 
     # Mainloop
     while True:
@@ -21,7 +21,17 @@ def main():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 return
-        gui.update_display()
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                gui.pick_piece(event.pos)
+
+            if event.type == pygame.MOUSEMOTION:
+                pos = event.pos
+
+            if event.type == pygame.MOUSEBUTTONUP:
+                gui.put_piece(event.pos)
+
+        gui.update_display(pos)
 
 
 if __name__ == "__main__":
