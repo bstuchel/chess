@@ -2,15 +2,17 @@
 This is the main file for the chess application.  It contains the mainloop 
 and control flow for the application.
 """
-from gui import GUI
 import pygame
+pygame.init()
+
+from board import Board
+from gui import GUI
 
 
 def main():
-    pygame.init()
-
-    gui = GUI()
-    pygame.display.update()
+    board = Board()
+    gui = GUI(board)
+    gui.update_display()
 
     # Mainloop
     while True:
