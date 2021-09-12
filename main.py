@@ -2,16 +2,17 @@
 This is the main file for the chess application.  It contains the mainloop 
 and control flow for the application.
 """
+from game import Game
 import pygame
 pygame.init()
 
-from board import Board
+from game import Game
 from gui import GUI
 
 
 def main():
-    board = Board()
-    gui = GUI(board)
+    game = Game()
+    gui = GUI(game)
     gui.update_display((0, 0))
 
     # Mainloop
@@ -23,13 +24,15 @@ def main():
                 return
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                gui.pick_piece(event.pos)
+                if event.button == 1:
+                    gui.pick_piece(event.pos)
 
             if event.type == pygame.MOUSEMOTION:
                 pos = event.pos
 
             if event.type == pygame.MOUSEBUTTONUP:
-                gui.put_piece(event.pos)
+                if event.button == 1:
+                    gui.put_piece(event.pos)
 
         gui.update_display(pos)
 

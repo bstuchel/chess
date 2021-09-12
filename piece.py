@@ -3,7 +3,7 @@ This file contains the Piece class and subclasses for each piece type
 """
 
 
-class Piece():
+class Piece:
     def __init__(self, isWhite):
         self.isWhite = isWhite
         self.is_captured = False

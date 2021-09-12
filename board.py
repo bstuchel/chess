@@ -1,14 +1,12 @@
 """ File: board.py
-This file contains the board class that controls the logic for the chess game
+This file contains the board class that holds pieces and their locations
 """
 from piece import Pawn, Knight, Bishop, Rook, Queen, King
 
 
-class Board():
+class Board:
     def __init__(self):
         self.board = [[None for _ in range(8)] for _ in range(8)]
-        self.score = {"white": 0, "black": 0}
-        self.move_log = []
         self.set_board()
 
     def set_board(self):

@@ -4,7 +4,7 @@ This file contains the GUI for the chess application
 import pygame
 
 
-class GUI():
+class GUI:
     # Define Colors
     DARK_GRAY = (49, 46, 43)
     GREEN = (118, 150, 86)
@@ -24,12 +24,14 @@ class GUI():
     LABEL_FONT = pygame.font.SysFont('bahnschrift', SQUARE_SIZE // 4)
     SCORE_FONT = pygame.font.SysFont('bahnschrift', 30)
 
-    def __init__(self, board):
+    def __init__(self, game):
         self.dis = self.create_display()
         self.game_surface = self.create_game_surface()
-        self.board = board
+        self.game = game
         self.set_sprites()
-        self.picked_piece = None
+
+    def set_game(self, game):
+        self.game = game
 
     def create_display(self):
         """ Creates the pygame display and sets the caption """
@@ -81,22 +83,22 @@ class GUI():
         # Draw pieces on board
         for i in range(8):
             for j in range(8):
-                if self.board.board[i][j]:
-                    self.dis.blit(self.board.board[i][j].sprite, 
+                if self.game.board.board[i][j]:
+                    self.dis.blit(self.game.board.board[i][j].sprite, 
                             (j * self.SQUARE_SIZE, i * self.SQUARE_SIZE))
 
         # Draw piece in hand
-        if self.picked_piece:
+        if self.game.picked_piece:
             x, y = pos
             x -= self.SQUARE_SIZE // 2
             y -= self.SQUARE_SIZE // 2
-            self.dis.blit(self.picked_piece.sprite, (x, y))
+            self.dis.blit(self.game.picked_piece.sprite, (x, y))
 
         pygame.display.update()
 
     def set_sprites(self):
         """ Sets the sprites for each piece on the board """
-        for rank in self.board.board:
+        for rank in self.game.board.board:
             for square in rank:
                 if square:
                     filepath = f"res/img/{self.SQUARE_SIZE}/{square.filename}"
@@ -106,14 +108,12 @@ class GUI():
         """ Pick up a pieces given the square coordinates """
         rank = pos[1] // self.SQUARE_SIZE
         file = pos[0] // self.SQUARE_SIZE
-        if file < 8 and rank < 8 and self.board.board[rank][file]:
-            self.picked_piece = self.board.board[rank][file]
-            self.board.board[rank][file] = None
+        if file < 8 and rank < 8:
+            self.game.pick_piece((rank, file))
 
     def put_piece(self, pos):
         """ Place a piece at the given coordinates """
         rank = pos[1] // self.SQUARE_SIZE
         file = pos[0] // self.SQUARE_SIZE
         if file < 8 and rank < 8:
-            self.board.board[rank][file] = self.picked_piece
-            self.picked_piece = None
+            self.game.put_piece((rank, file))
