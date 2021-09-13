@@ -13,12 +13,16 @@ from gui import GUI
 def main():
     game = Game()
     gui = GUI(game)
-    gui.update_display((0, 0))
+    pos = (0, 0)
+    gui.update_display(pos)
+    need_update = False
 
     # Mainloop
     while True:
+        if not game.picked_piece:
+            pygame.time.delay(50)
+
         for event in pygame.event.get():
-            # End application if window is closed
             if event.type == pygame.QUIT:
                 pygame.quit()
                 return
@@ -26,15 +30,20 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     gui.pick_piece(event.pos)
+                    need_update = True
 
             if event.type == pygame.MOUSEMOTION:
                 pos = event.pos
+                need_update = True
 
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:
                     gui.put_piece(event.pos)
+                    need_update = True
 
-        gui.update_display(pos)
+        if need_update:
+            gui.update_display(pos)
+            need_update = False
 
 
 if __name__ == "__main__":

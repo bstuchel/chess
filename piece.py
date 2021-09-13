@@ -4,8 +4,8 @@ This file contains the Piece class and subclasses for each piece type
 
 
 class Piece:
-    def __init__(self, isWhite):
-        self.isWhite = isWhite
+    def __init__(self, color):
+        self.color = color
         self.is_captured = False
         self.has_not_moved = True
         self.legal_moves = []
@@ -13,41 +13,41 @@ class Piece:
 
 
 class Pawn(Piece):
-    def __init__(self, isWhite):
-        super().__init__(isWhite)
-        self.filename = f"{'w' if isWhite else 'b'}p.png"
+    def __init__(self, color):
+        super().__init__(color)
+        self.filename = f"{color}p.png"
         self.value = 1
 
 
 class Knight(Piece):
-    def __init__(self, isWhite):
-        super().__init__(isWhite)
-        self.filename = f"{'w' if isWhite else 'b'}n.png"
+    def __init__(self, color):
+        super().__init__(color)
+        self.filename = f"{color}n.png"
         self.value = 3
 
 
 class Bishop(Piece):
-    def __init__(self, isWhite):
-        super().__init__(isWhite)
-        self.filename = f"{'w' if isWhite else 'b'}b.png"
+    def __init__(self, color):
+        super().__init__(color)
+        self.filename = f"{color}b.png"
         self.value = 3
 
 
 class Rook(Piece):
-    def __init__(self, isWhite):
-        super().__init__(isWhite)
-        self.filename = f"{'w' if isWhite else 'b'}r.png"
+    def __init__(self, color):
+        super().__init__(color)
+        self.filename = f"{color}r.png"
         self.value = 5
 
 
 class Queen(Piece):
-    def __init__(self, isWhite):
-        super().__init__(isWhite)
-        self.filename = f"{'w' if isWhite else 'b'}q.png"
+    def __init__(self, color):
+        super().__init__(color)
+        self.filename = f"{color}q.png"
         self.value = 9
 
 
 class King(Piece):
-    def __init__(self, isWhite):
-        super().__init__(isWhite)
-        self.filename = f"{'w' if isWhite else 'b'}k.png"
+    def __init__(self, color):
+        super().__init__(color)
+        self.filename = f"{color}k.png"

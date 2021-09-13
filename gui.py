@@ -79,14 +79,12 @@ class GUI:
         pos: Tuple containing the x and y coordinates of the cursor
         """
         self.dis.blit(self.game_surface, (0, 0))
-
         # Draw pieces on board
         for i in range(8):
             for j in range(8):
                 if self.game.board.board[i][j]:
                     self.dis.blit(self.game.board.board[i][j].sprite, 
                             (j * self.SQUARE_SIZE, i * self.SQUARE_SIZE))
-
         # Draw piece in hand
         if self.game.picked_piece:
             x, y = pos
@@ -105,15 +103,15 @@ class GUI:
                     square.sprite = pygame.image.load(filepath)
 
     def pick_piece(self, pos):
-        """ Pick up a pieces given the square coordinates """
-        rank = pos[1] // self.SQUARE_SIZE
-        file = pos[0] // self.SQUARE_SIZE
-        if file < 8 and rank < 8:
-            self.game.pick_piece((rank, file))
+        """ Pick up a pieces given the square coordinates
+        pos: Tuple containing the x and y coordinates of the cursor
+        """
+        self.game.pick_piece((pos[1] // self.SQUARE_SIZE, 
+                              pos[0] // self.SQUARE_SIZE))
 
     def put_piece(self, pos):
-        """ Place a piece at the given coordinates """
-        rank = pos[1] // self.SQUARE_SIZE
-        file = pos[0] // self.SQUARE_SIZE
-        if file < 8 and rank < 8:
-            self.game.put_piece((rank, file))
+        """ Place a piece at the given coordinates 
+        pos: Tuple containing the x and y coordinates of the cursor
+        """
+        self.game.put_piece((pos[1] // self.SQUARE_SIZE, 
+                             pos[0] // self.SQUARE_SIZE))
