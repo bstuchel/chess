@@ -7,6 +7,8 @@ from piece import Color, Pawn, Knight, Bishop, Rook, Queen, King
 class Board:
     def __init__(self):
         self.board = [[None for _ in range(8)] for _ in range(8)]
+        self.black_king_square = None
+        self.white_king_square = None
         self.set_board()
 
     def set_board(self):
@@ -27,3 +29,5 @@ class Board:
             self.board[1][i] = Pawn(Color.BLACK)
         for i in range(8):
             self.board[6][i] = Pawn(Color.WHITE)
+        self.black_king_square = (0, 4)
+        self.white_king_square = (7, 4)
