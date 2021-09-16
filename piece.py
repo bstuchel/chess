@@ -17,7 +17,6 @@ class Piece:
         self.color = color
         self.is_captured = False
         self.has_not_moved = True
-        self.potential_moves = []
         self.legal_moves = []
         self.sprite = None
 
@@ -168,7 +167,6 @@ class King(Piece):
         rank, file = square
         for delta_rank in range(-1, 2):
             for delta_file in range(-1, 2):
-                print(f'delta_rank: {delta_rank}, delta_file: {delta_file}')
                 if delta_rank == 0 and delta_file == 0:
                     continue
                 new_rank = rank + delta_rank

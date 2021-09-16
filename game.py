@@ -26,7 +26,6 @@ class Game:
         rank, file = square
         if rank < 8 and file < 8 and self.board.board[rank][file]:
             self.picked_piece = self.board.board[rank][file]
-            print(self.picked_piece.legal_moves)
             self.board.board[rank][file] = None
             self.picked_from = square
 

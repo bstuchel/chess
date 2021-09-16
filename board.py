@@ -13,22 +13,16 @@ class Board:
         """ Sets the board by creating pieces and placing them in their 
         starting squares 
         """
-        self.board[0][0] = Rook(Color.BLACK)
-        self.board[0][1] = Knight(Color.BLACK)
-        self.board[0][2] = Bishop(Color.BLACK)
-        self.board[0][3] = Queen(Color.BLACK)
-        self.board[0][4] = King(Color.BLACK)
-        self.board[0][5] = Bishop(Color.BLACK)
-        self.board[0][6] = Knight(Color.BLACK)
-        self.board[0][7] = Rook(Color.BLACK)
-        self.board[7][0] = Rook(Color.WHITE)
-        self.board[7][1] = Knight(Color.WHITE)
-        self.board[7][2] = Bishop(Color.WHITE)
-        self.board[7][3] = Queen(Color.WHITE)
-        self.board[7][4] = King(Color.WHITE)
-        self.board[7][5] = Bishop(Color.WHITE)
-        self.board[7][6] = Knight(Color.WHITE)
-        self.board[7][7] = Rook(Color.WHITE)
+        for color in [Color.WHITE, Color.BLACK]:
+            rank = 0 if color == Color.BLACK else 7
+            self.board[rank][0] = Rook(color)
+            self.board[rank][1] = Knight(color)
+            self.board[rank][2] = Bishop(color)
+            self.board[rank][3] = Queen(color)
+            self.board[rank][4] = King(color)
+            self.board[rank][5] = Bishop(color)
+            self.board[rank][6] = Knight(color)
+            self.board[rank][7] = Rook(color)
         for i in range(8):
             self.board[1][i] = Pawn(Color.BLACK)
         for i in range(8):
