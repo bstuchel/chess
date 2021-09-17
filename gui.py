@@ -82,8 +82,8 @@ class GUI:
         # Draw pieces on board
         for i in range(8):
             for j in range(8):
-                if self.game.board.board[i][j]:
-                    self.dis.blit(self.game.board.board[i][j].sprite, 
+                if self.game.board[i][j]:
+                    self.dis.blit(self.game.board[i][j].sprite, 
                             (j * self.SQUARE_SIZE, i * self.SQUARE_SIZE))
         # Draw piece in hand
         if self.game.picked_piece:
@@ -96,7 +96,7 @@ class GUI:
 
     def set_sprites(self):
         """ Sets the sprites for each piece on the board """
-        for rank in self.game.board.board:
+        for rank in self.game.board:
             for square in rank:
                 if square:
                     filepath = f"res/img/{self.SQUARE_SIZE}/{square.filename}"

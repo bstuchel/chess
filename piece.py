@@ -19,6 +19,83 @@ class Piece:
         self.is_captured = False
         self.has_not_moved = True
         self.sprite = None
+    
+    def is_attacked(self, square, board):
+        """ Checks if the square is attacked by the opponent
+
+        Arguments:
+        square (tuple(int, int)): Coordinates of square on the chess board
+        board (list(list)): 8x8 2D list of the board containing piece objects
+
+        Returns:
+        Boolean telling wether or not the given square is attacked
+        """
+        # Check for pawns
+        rank, file = square
+        sign = 1 if self.color == Color.BLACK else -1
+        if (rank + sign < 8 and rank + sign > -1 and file < 7 and 
+            board[rank + sign][file + 1] and 
+            board[rank + sign][file + 1].color != self.color and
+            isinstance(board[rank + sign][file + 1], Pawn)):
+            return True
+        if (rank + sign < 8 and rank + sign > -1 and file > 0 and 
+            board[rank + sign][file - 1] and 
+            board[rank + sign][file - 1].color != self.color and
+            isinstance(board[rank + sign][file - 1], Pawn)):
+            return True
+        # Check for knights
+        for delta_rank in [-2, -1, 1, 2]:
+            for delta_file in [-2, -1, 1, 2]:
+                if abs(delta_file) + abs(delta_rank) != 3:
+                    continue
+                new_rank = rank + delta_rank
+                new_file = file + delta_file
+                if ((new_rank > -1 and new_rank < 8 and 
+                    new_file > -1 and new_file < 8) and 
+                    board[new_rank][new_file] and
+                    board[new_rank][new_file].color != self.color and
+                    isinstance(board[new_rank][new_file], Knight)):
+                    return True
+        # Check for bishops and queen diagonals
+        for delta_rank, delta_file in [(1, 1), (1, -1), (-1, 1), (-1, -1)]:
+            rank, file = square
+            while True:
+                rank += delta_rank
+                file += delta_file
+                if rank < 0 or rank > 7 or file < 0 or file > 7:
+                    break
+                if board[rank][file]: 
+                    if (board[rank][file].color != self.color and 
+                        isinstance(board[rank][file], (Bishop, Queen))):
+                        return True
+                    break
+        # Check for rooks and queen orthogonals
+        for delta_rank, delta_file in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
+            rank, file = square
+            while True:
+                rank += delta_rank
+                file += delta_file
+                if rank < 0 or rank > 7 or file < 0 or file > 7:
+                    break
+                if board[rank][file]: 
+                    if (board[rank][file].color != self.color and 
+                        isinstance(board[rank][file], (Rook, Queen))):
+                        return True
+                    break
+        # Check for kings
+        for delta_rank in range(-1, 2):
+            for delta_file in range(-1, 2):
+                if delta_rank == 0 and delta_file == 0:
+                    continue
+                new_rank = rank + delta_rank
+                new_file = file + delta_file
+                if (new_rank > -1 and new_rank < 8 and 
+                    new_file > -1 and new_file < 8 and 
+                    board[new_rank][new_file] and 
+                    board[rank][file].color != self.color and 
+                    isinstance(board[rank][file], King)):
+                    return True
+        return False
 
 
 class Pawn(Piece):
@@ -276,78 +353,3 @@ class King(Piece):
                 if board[rank][0] and board[rank][0].has_not_moved:
                     legal_moves.append((rank, 2))
         return legal_moves
-
-    def is_in_check(self, square, board):
-        # Check for pawns
-        rank, file = square
-        sign = 1 if self.color == Color.BLACK else -1
-
-        if (rank + sign < 8 and rank + sign > -1 and file < 7 and 
-            board[rank + sign][file + 1] and 
-            board[rank + sign][file + 1].color != self.color and
-            isinstance(board[rank + sign][file + 1], Pawn)):
-            return True
-
-        if (rank + sign < 8 and rank + sign > -1 and file > 0 and 
-            board[rank + sign][file - 1] and 
-            board[rank + sign][file - 1].color != self.color and
-            isinstance(board[rank + sign][file - 1], Pawn)):
-            return True
-        
-        # Check for knights
-        for delta_rank in [-2, -1, 1, 2]:
-            for delta_file in [-2, -1, 1, 2]:
-                if abs(delta_file) + abs(delta_rank) != 3:
-                    continue
-                new_rank = rank + delta_rank
-                new_file = file + delta_file
-                if ((new_rank > -1 and new_rank < 8 and 
-                    new_file > -1 and new_file < 8) and 
-                    board[new_rank][new_file] and
-                    board[new_rank][new_file].color != self.color and
-                    isinstance(board[new_rank][new_file], Knight)):
-                    return True
-
-        # Check for bishops and queens
-        for delta_rank, delta_file in [(1, 1), (1, -1), (-1, 1), (-1, -1)]:
-            rank, file = square
-            while True:
-                rank += delta_rank
-                file += delta_file
-                if rank < 0 or rank > 7 or file < 0 or file > 7:
-                    break
-                if board[rank][file]: 
-                    if (board[rank][file].color != self.color and 
-                        isinstance(board[rank][file], (Bishop, Queen))):
-                        return True
-                    break
-
-        # Check for rooks and queens
-        for delta_rank, delta_file in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
-            rank, file = square
-            while True:
-                rank += delta_rank
-                file += delta_file
-                if rank < 0 or rank > 7 or file < 0 or file > 7:
-                    break
-                if board[rank][file]: 
-                    if (board[rank][file].color != self.color and 
-                        isinstance(board[rank][file], (Rook, Queen))):
-                        return True
-                    break
-
-        # Check for kings
-        for delta_rank in range(-1, 2):
-            for delta_file in range(-1, 2):
-                if delta_rank == 0 and delta_file == 0:
-                    continue
-                new_rank = rank + delta_rank
-                new_file = file + delta_file
-                if (new_rank > -1 and new_rank < 8 and 
-                    new_file > -1 and new_file < 8 and 
-                    board[new_rank][new_file] and 
-                    board[rank][file].color != self.color and 
-                    isinstance(board[rank][file], King)):
-                    return True
-
-        return False
