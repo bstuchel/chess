@@ -16,7 +16,7 @@ class Game:
         self.picked_piece = None
         self.picked_from = None
         self.picked_piece_moves = None
-    
+
     def set_board(self):
         """ Sets the board by creating pieces and placing them in their 
         starting squares 

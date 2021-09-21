@@ -92,7 +92,7 @@ class Piece:
                 if (new_rank > -1 and new_rank < 8 and 
                     new_file > -1 and new_file < 8 and 
                     board[new_rank][new_file] and 
-                    board[rank][file].color != self.color and 
+                    board[new_rank][new_file].color != self.color and 
                     isinstance(board[rank][file], King)):
                     return True
         return False
