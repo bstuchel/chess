@@ -24,11 +24,19 @@ class GUI:
     LABEL_FONT = pygame.font.SysFont('bahnschrift', SQUARE_SIZE // 4)
     SCORE_FONT = pygame.font.SysFont('bahnschrift', 30)
 
+    # Define sprites
+    SPRITES = {}
+    for piece_char in "pnbrqk":
+        filepath_black = f"res/img/{SQUARE_SIZE}/b{piece_char}.png"
+        filepath_white = f"res/img/{SQUARE_SIZE}/w{piece_char}.png"
+        SPRITES[piece_char] = pygame.image.load(filepath_black)
+        SPRITES[piece_char.upper()] = pygame.image.load(filepath_white)
+
     def __init__(self, game):
         self.dis = self.create_display()
         self.game_surface = self.create_game_surface()
         self.game = game
-        self.set_sprites()
+        self.in_hand = None
 
     def set_game(self, game):
         self.game = game
@@ -80,38 +88,36 @@ class GUI:
         """
         self.dis.blit(self.game_surface, (0, 0))
         # Draw pieces on board
-        for i in range(8):
-            for j in range(8):
-                if self.game.board[i][j]:
-                    self.dis.blit(self.game.board[i][j].sprite, 
-                            (j * self.SQUARE_SIZE, i * self.SQUARE_SIZE))
-        # Draw piece in hand
-        if self.game.picked_piece:
-            x, y = pos
-            x -= self.SQUARE_SIZE // 2
-            y -= self.SQUARE_SIZE // 2
-            self.dis.blit(self.game.picked_piece.sprite, (x, y))
-
+        rank = 0
+        file = 0
+        for char in self.game.board.board_fen():
+            if char == '/':
+                file = 0
+                rank += 1
+            elif char.isnumeric():
+                file += int(char)
+            elif self.in_hand == (rank, file):
+                x, y = pos
+                x -= self.SQUARE_SIZE // 2
+                y -= self.SQUARE_SIZE // 2
+                self.dis.blit(self.SPRITES[char], (x, y))
+                file += 1
+            else:
+                self.dis.blit(self.SPRITES[char], (file * self.SQUARE_SIZE, 
+                                                   rank * self.SQUARE_SIZE))
+                file += 1
         pygame.display.update()
-
-    def set_sprites(self):
-        """ Sets the sprites for each piece on the board """
-        for rank in self.game.board:
-            for square in rank:
-                if square:
-                    filepath = f"res/img/{self.SQUARE_SIZE}/{square.filename}"
-                    square.sprite = pygame.image.load(filepath)
 
     def pick_piece(self, pos):
         """ Pick up a pieces given the square coordinates
         pos: Tuple containing the x and y coordinates of the cursor
         """
-        self.game.pick_piece((pos[1] // self.SQUARE_SIZE, 
-                              pos[0] // self.SQUARE_SIZE))
+        file = pos[0] // self.SQUARE_SIZE
+        rank = pos[1] // self.SQUARE_SIZE
+        self.in_hand = (rank, file)
 
     def put_piece(self, pos):
         """ Place a piece at the given coordinates 
         pos: Tuple containing the x and y coordinates of the cursor
         """
-        self.game.put_piece((pos[1] // self.SQUARE_SIZE, 
-                             pos[0] // self.SQUARE_SIZE))
+        self.in_hand = None

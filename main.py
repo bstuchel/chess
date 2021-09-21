@@ -19,7 +19,7 @@ def main():
 
     # Mainloop
     while True:
-        if not game.picked_piece:
+        if not gui.in_hand:
             pygame.time.delay(50)
 
         for event in pygame.event.get():
