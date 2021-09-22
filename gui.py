@@ -1,6 +1,7 @@
 """ File: gui.py
 This file contains the GUI for the chess application
 """
+import chess
 import pygame
 
 
@@ -9,6 +10,8 @@ class GUI:
     DARK_GRAY = (49, 46, 43)
     GREEN = (118, 150, 86)
     CREAM = (238, 238, 210)
+    WHITE = (255, 255, 255)
+    LIGHT_GRAY = (241, 241, 241)
     SQUARE_COLORS = (CREAM, GREEN)
 
     # Define Geometry
@@ -35,11 +38,10 @@ class GUI:
     def __init__(self, game):
         self.dis = self.create_display()
         self.game_surface = self.create_game_surface()
+        self.white_promo_surf = self.white_promo_menu()
+        self.black_promo_surf = self.black_promo_menu()
         self.game = game
         self.in_hand = None
-
-    def set_game(self, game):
-        self.game = game
 
     def create_display(self):
         """ Creates the pygame display and sets the caption """
@@ -80,6 +82,28 @@ class GUI:
             y_location -= self.SQUARE_SIZE
         return game_surface
 
+    def white_promo_menu(self):
+        """ Creates the promotion menu surface for the white pieces. """
+        white_promo_surface = pygame.Surface((self.SQUARE_SIZE, 
+                                             4*self.SQUARE_SIZE))
+        white_promo_surface.fill(self.WHITE)
+        white_promo_surface.blit(self.SPRITES['Q'], (0, 0))
+        white_promo_surface.blit(self.SPRITES['N'], (0, self.SQUARE_SIZE))
+        white_promo_surface.blit(self.SPRITES['R'], (0, 2 * self.SQUARE_SIZE))
+        white_promo_surface.blit(self.SPRITES['B'], (0, 3 * self.SQUARE_SIZE))
+        return white_promo_surface
+        
+    def black_promo_menu(self):
+        """ Creates the promotion menu surface for the black pieces. """
+        black_promo_surface = pygame.Surface((self.SQUARE_SIZE, 
+                                                4*self.SQUARE_SIZE))
+        black_promo_surface.fill(self.WHITE)
+        black_promo_surface.blit(self.SPRITES['b'], (0, 0))
+        black_promo_surface.blit(self.SPRITES['r'], (0, self.SQUARE_SIZE))
+        black_promo_surface.blit(self.SPRITES['n'], (0, 2 * self.SQUARE_SIZE))
+        black_promo_surface.blit(self.SPRITES['q'], (0, 3 * self.SQUARE_SIZE))
+        return black_promo_surface
+
     def update_display(self, pos):
         """ Updates the display by clearing the display to the blank board 
         surface.  Pieces are then drawn to the board including pieces held by 
@@ -88,24 +112,31 @@ class GUI:
         """
         self.dis.blit(self.game_surface, (0, 0))
         # Draw pieces on board
-        rank = 0
+        rank = 7
         file = 0
+        in_hand_char = None
         for char in self.game.board.board_fen():
             if char == '/':
                 file = 0
-                rank += 1
+                rank -= 1
             elif char.isnumeric():
                 file += int(char)
-            elif self.in_hand == (rank, file):
+            elif self.in_hand == (file, rank):
+                in_hand_char = char
+                file += 1
+            else:
+                x = file * self.SQUARE_SIZE
+                y = (7 - rank) * self.SQUARE_SIZE
+                self.dis.blit(self.SPRITES[char], (x, y))
+                file += 1
+
+        # Draw piece in hand
+        if self.in_hand and in_hand_char:
                 x, y = pos
                 x -= self.SQUARE_SIZE // 2
                 y -= self.SQUARE_SIZE // 2
-                self.dis.blit(self.SPRITES[char], (x, y))
-                file += 1
-            else:
-                self.dis.blit(self.SPRITES[char], (file * self.SQUARE_SIZE, 
-                                                   rank * self.SQUARE_SIZE))
-                file += 1
+                self.dis.blit(self.SPRITES[in_hand_char], (x, y))
+
         pygame.display.update()
 
     def pick_piece(self, pos):
@@ -113,11 +144,32 @@ class GUI:
         pos: Tuple containing the x and y coordinates of the cursor
         """
         file = pos[0] // self.SQUARE_SIZE
-        rank = pos[1] // self.SQUARE_SIZE
-        self.in_hand = (rank, file)
+        rank = 7 - (pos[1] // self.SQUARE_SIZE)
+        self.in_hand = (file, rank)
 
     def put_piece(self, pos):
         """ Place a piece at the given coordinates 
         pos: Tuple containing the x and y coordinates of the cursor
         """
+        file = pos[0] // self.SQUARE_SIZE
+        rank = 7 - (pos[1] // self.SQUARE_SIZE)
+        if file > -1 and file < 8 and rank > -1 and rank < 8:
+            if self.game.is_promotion(self.in_hand, (file, rank)):
+                # self.game.move(self.in_hand, (file, rank), chess.QUEEN)
+                self.choose_promotion((file, rank))
+            else:
+                self.game.move(self.in_hand, (file, rank))
         self.in_hand = None
+
+    def choose_promotion(self, square):
+        file, rank = square
+        if rank == 7:
+            self.dis.blit(self.white_promo_surf, (file * self.SQUARE_SIZE, 0))
+        else:
+            self.dis.blit(self.black_promo_surf, (file * self.SQUARE_SIZE, 4 * self.SQUARE_SIZE))
+        pygame.display.update()
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    return
