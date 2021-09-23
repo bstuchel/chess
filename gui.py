@@ -36,20 +36,20 @@ class GUI:
         SPRITES[piece_char.upper()] = pygame.image.load(filepath_white)
 
     def __init__(self, game):
-        self.dis = self.create_display()
-        self.game_surface = self.create_game_surface()
-        self.white_promo_surf = self.white_promo_menu()
-        self.black_promo_surf = self.black_promo_menu()
+        self.dis = self._create_display()
+        self.game_surface = self._create_game_surface()
+        self.white_promo_surf = self._white_promo_menu()
+        self.black_promo_surf = self._black_promo_menu()
         self.game = game
         self.in_hand = None
 
-    def create_display(self):
+    def _create_display(self):
         """ Creates the pygame display and sets the caption """
         dis = pygame.display.set_mode((self.WINDOW_WIDTH, self.BOARD_SIZE))
         pygame.display.set_caption('Chess')
         return dis
 
-    def create_game_surface(self):
+    def _create_game_surface(self):
         """ Creates the game surface to be used for the in-game interface.  
         It contains the chess board, scoreboard and the options menu.
         """
@@ -61,7 +61,6 @@ class GUI:
                 pygame.draw.rect(game_surface, self.SQUARE_COLORS[(x+y) % 2],
                                 (x * self.SQUARE_SIZE, y * self.SQUARE_SIZE, 
                                  self.SQUARE_SIZE, self.SQUARE_SIZE))
-
         # File labels (a-h)
         x_location = self.SQUARE_SIZE * 5 / 6
         y_location = self.BOARD_SIZE - (self.SQUARE_SIZE / 3)
@@ -71,7 +70,6 @@ class GUI:
                                            self.SQUARE_COLORS[i % 2])
             game_surface.blit(label, [x_location, y_location])
             x_location += self.SQUARE_SIZE
-
         # Rank labels (1-8)
         x_location = self.SQUARE_SIZE // 14
         y_location = 7 * self.SQUARE_SIZE  # Starts labeling at the bottom
@@ -82,7 +80,7 @@ class GUI:
             y_location -= self.SQUARE_SIZE
         return game_surface
 
-    def white_promo_menu(self):
+    def _white_promo_menu(self):
         """ Creates the promotion menu surface for the white pieces. """
         white_promo_surface = pygame.Surface((self.SQUARE_SIZE, 
                                              4*self.SQUARE_SIZE))
@@ -93,7 +91,7 @@ class GUI:
         white_promo_surface.blit(self.SPRITES['B'], (0, 3 * self.SQUARE_SIZE))
         return white_promo_surface
 
-    def black_promo_menu(self):
+    def _black_promo_menu(self):
         """ Creates the promotion menu surface for the black pieces. """
         black_promo_surface = pygame.Surface((self.SQUARE_SIZE, 
                                                 4*self.SQUARE_SIZE))
@@ -154,16 +152,13 @@ class GUI:
         file = pos[0] // self.SQUARE_SIZE
         rank = 7 - (pos[1] // self.SQUARE_SIZE)
         if file > -1 and file < 8 and rank > -1 and rank < 8:
+            promo_piece = None
             if self.game.is_promotion(self.in_hand, (file, rank)):
-                # self.game.move(self.in_hand, (file, rank), chess.QUEEN)
-                promo_piece = self.choose_promotion((file, rank))
-                if promo_piece:
-                    self.game.move(self.in_hand, (file, rank), promo_piece)
-            else:
-                self.game.move(self.in_hand, (file, rank))
+                promo_piece = self._choose_promotion((file, rank))
+            self.game.move(self.in_hand, (file, rank), promo_piece)
         self.in_hand = None
 
-    def choose_promotion(self, square):
+    def _choose_promotion(self, square):
         # Display menu
         file, rank = square
         if rank == 7:
@@ -171,7 +166,6 @@ class GUI:
         else:
             self.dis.blit(self.black_promo_surf, (file * self.SQUARE_SIZE, 4 * self.SQUARE_SIZE))
         pygame.display.update()
-
         # Get response
         while True:
             pygame.time.delay(50)
@@ -179,15 +173,14 @@ class GUI:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-            if event.type == pygame.MOUSEBUTTONUP:
-                if event.button == 1:
-                    x, y = event.pos
-                    click_file = x // self.SQUARE_SIZE
-                    click_rank = 7 - (y // self.SQUARE_SIZE)
-                    rank_diff = abs(click_rank - rank)
-                    if click_file == file and rank_diff < 4:
-                        if rank_diff == 3: return chess.BISHOP
-                        elif rank_diff == 2: return chess.ROOK
-                        elif rank_diff == 1: return chess.KNIGHT
-                        else: return chess.QUEEN                
-                    return None
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                x, y = event.pos
+                click_file = x // self.SQUARE_SIZE
+                click_rank = 7 - (y // self.SQUARE_SIZE)
+                rank_diff = abs(click_rank - rank)
+                if click_file == file and rank_diff < 4:
+                    if rank_diff == 3: return chess.BISHOP
+                    elif rank_diff == 2: return chess.ROOK
+                    elif rank_diff == 1: return chess.KNIGHT
+                    else: return chess.QUEEN                
+                return None
