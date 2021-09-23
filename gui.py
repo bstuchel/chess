@@ -92,7 +92,7 @@ class GUI:
         white_promo_surface.blit(self.SPRITES['R'], (0, 2 * self.SQUARE_SIZE))
         white_promo_surface.blit(self.SPRITES['B'], (0, 3 * self.SQUARE_SIZE))
         return white_promo_surface
-        
+
     def black_promo_menu(self):
         """ Creates the promotion menu surface for the black pieces. """
         black_promo_surface = pygame.Surface((self.SQUARE_SIZE, 
@@ -156,20 +156,38 @@ class GUI:
         if file > -1 and file < 8 and rank > -1 and rank < 8:
             if self.game.is_promotion(self.in_hand, (file, rank)):
                 # self.game.move(self.in_hand, (file, rank), chess.QUEEN)
-                self.choose_promotion((file, rank))
+                promo_piece = self.choose_promotion((file, rank))
+                if promo_piece:
+                    self.game.move(self.in_hand, (file, rank), promo_piece)
             else:
                 self.game.move(self.in_hand, (file, rank))
         self.in_hand = None
 
     def choose_promotion(self, square):
+        # Display menu
         file, rank = square
         if rank == 7:
             self.dis.blit(self.white_promo_surf, (file * self.SQUARE_SIZE, 0))
         else:
             self.dis.blit(self.black_promo_surf, (file * self.SQUARE_SIZE, 4 * self.SQUARE_SIZE))
         pygame.display.update()
+
+        # Get response
         while True:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    return
+            pygame.time.delay(50)
+            event = pygame.event.wait()
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 1:
+                    x, y = event.pos
+                    click_file = x // self.SQUARE_SIZE
+                    click_rank = 7 - (y // self.SQUARE_SIZE)
+                    rank_diff = abs(click_rank - rank)
+                    if click_file == file and rank_diff < 4:
+                        if rank_diff == 3: return chess.BISHOP
+                        elif rank_diff == 2: return chess.ROOK
+                        elif rank_diff == 1: return chess.KNIGHT
+                        else: return chess.QUEEN                
+                    return None
