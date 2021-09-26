@@ -26,6 +26,7 @@ class GUI:
     # Define fonts
     LABEL_FONT = pygame.font.SysFont('bahnschrift', SQUARE_SIZE // 4)
     SCORE_FONT = pygame.font.SysFont('bahnschrift', 30)
+    MENU_FONT = pygame.font.SysFont('bahnschrift', SQUARE_SIZE // 3)
 
     # Define sprites
     SPRITES = {}
@@ -35,13 +36,16 @@ class GUI:
         SPRITES[piece_char] = pygame.image.load(filepath_black)
         SPRITES[piece_char.upper()] = pygame.image.load(filepath_white)
 
-    def __init__(self, game):
+    def __init__(self):
         self.dis = self._create_display()
         self.game_surface = self._create_game_surface()
         self.white_promo_surf = self._white_promo_menu()
         self.black_promo_surf = self._black_promo_menu()
-        self.game = game
+        self.game = None
         self.in_hand = None
+
+    def set_game(self, game):
+        self.game = game
 
     def _create_display(self):
         """ Creates the pygame display and sets the caption """
@@ -101,6 +105,47 @@ class GUI:
         black_promo_surface.blit(self.SPRITES['n'], (0, 2 * self.SQUARE_SIZE))
         black_promo_surface.blit(self.SPRITES['q'], (0, 3 * self.SQUARE_SIZE))
         return black_promo_surface
+
+    def _get_game_over_menu(self):
+        game_over_surface = pygame.Surface((5 * self.SQUARE_SIZE, 
+                                            (7 * self.SQUARE_SIZE) // 2))
+        game_over_surface.fill(self.DARK_GRAY)
+        # pygame.draw.rect(game_over_surface, self.GREEN,
+        #                  (self.SQUARE_SIZE // 2, self.SQUARE_SIZE // 2, 
+        #                   2 * self.SQUARE_SIZE, self.SQUARE_SIZE))
+
+        outcome = self.game.board.outcome()
+        if outcome.winner:
+            label = "White Wins!"
+        elif outcome.winner == None:
+            label = "Draw"
+        else:
+            label = "Black Wins!"
+        termination_label = self.MENU_FONT.render(label, True, self.WHITE)
+        width = termination_label.get_width()
+        height = termination_label.get_height()
+        game_over_surface.blit(termination_label, 
+                               [5 * self.SQUARE_SIZE // 2 - width // 2, 
+                                self.SQUARE_SIZE // 2 - height // 2])
+
+        termination = outcome.termination.name.title()
+        termination_label = self.MENU_FONT.render(termination, True, self.WHITE)
+        width = termination_label.get_width()
+        height = termination_label.get_height()
+        game_over_surface.blit(termination_label, 
+                               [5 * self.SQUARE_SIZE // 2 - width // 2, 
+                                4 * self.SQUARE_SIZE // 3 - height // 2])
+
+        pygame.draw.rect(game_over_surface, self.GREEN,
+                         (self.SQUARE_SIZE, 2 * self.SQUARE_SIZE,
+                          3 * self.SQUARE_SIZE, self.SQUARE_SIZE))
+        new_game_label = self.MENU_FONT.render("New Game", True, self.WHITE)
+        width = new_game_label.get_width()
+        height = new_game_label.get_height()
+        game_over_surface.blit(new_game_label, 
+                               [5 * self.SQUARE_SIZE // 2 - width // 2, 
+                                5 * self.SQUARE_SIZE // 2 - height // 2])
+        return game_over_surface
 
     def update_display(self, pos):
         """ Updates the display by clearing the display to the blank board 
@@ -184,3 +229,8 @@ class GUI:
                     elif rank_diff == 1: return chess.KNIGHT
                     else: return chess.QUEEN                
                 return None
+
+    def display_menu(self):
+        self.dis.blit(self._get_game_over_menu(), ((5 * self.SQUARE_SIZE) // 2, 
+                                            (9 * self.SQUARE_SIZE) // 4))
+        pygame.display.update()

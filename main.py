@@ -6,13 +6,37 @@ from game import Game
 import pygame
 pygame.init()
 
+from enum import Enum
 from game import Game
 from gui import GUI
 
 
+class GameState(Enum):
+    # Type used to control the gamestate
+    QUIT = -1
+    GAME = 0
+    MENU = 1
+
+
 def main():
+    pygame.init()
+    gui = GUI()
+    game_state = GameState.GAME
+    while True:
+        if game_state == GameState.GAME:
+            game_state = play(gui)
+
+        if game_state == GameState.MENU:
+            game_state = menu(gui)
+
+        if game_state == GameState.QUIT:
+            pygame.quit()
+            return
+
+
+def play(gui):
     game = Game()
-    gui = GUI(game)
+    gui.set_game(game)
     pos = (0, 0)
     gui.update_display(pos)
     need_update = False
@@ -24,8 +48,7 @@ def main():
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                return
+                return GameState.QUIT
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
@@ -44,6 +67,28 @@ def main():
         if need_update:
             gui.update_display(pos)
             need_update = False
+            if game.is_game_over():
+                return GameState.MENU
+
+    
+def menu(gui):
+    pos = (0, 0)
+    gui.update_display(pos)
+
+    # Display the end game menu
+    gui.display_menu()
+
+    # Mainloop
+    while True:
+        pygame.time.delay(50)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return GameState.QUIT
+
+            if event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 1:
+                    gui.menu_click(pos)
 
 
 if __name__ == "__main__":

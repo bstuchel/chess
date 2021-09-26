@@ -23,3 +23,6 @@ class Game:
             return False
         promo_rank = 7 if piece.color == chess.WHITE else 0
         return piece.piece_type == chess.PAWN and to_coord[1] == promo_rank
+
+    def is_game_over(self):
+        return bool(self.board.outcome())
