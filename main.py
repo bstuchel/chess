@@ -15,6 +15,7 @@ pygame.init()
 from enum import Enum
 from game import Game
 from game_gui import GameGUI
+from menu_gui import MenuGUI
 
 
 # Window Geometry
@@ -33,7 +34,7 @@ def main():
     """ Set up and control the flow of the application """
     dis = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     pygame.display.set_caption('Chess')
-    game_state = GameState.GAME
+    game_state = GameState.MENU
     while True:
         if game_state == GameState.GAME:
             game_state = play(dis)
@@ -100,22 +101,27 @@ def play(dis):
 
 
 
-def menu(gui):
+def menu(dis):
     """ Sets up and shows the menu for the application """
+    gui = MenuGUI(dis)
     pos = (0, 0)
     gui.update_display(pos)
 
     # Menu Loop
     while True:
-        pygame.time.delay(50)
+        pygame.time.delay(15)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return GameState.QUIT
 
-            if event.type == pygame.MOUSEBUTTONUP:
-                if event.button == 1:
-                    gui.menu_click(pos)
+            if event.type == pygame.MOUSEMOTION:
+                gui.update_display(event.pos)
+
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                choice = gui.click(event.pos)
+                if choice == 1:
+                    return GameState.GAME
 
 
 if __name__ == "__main__":
