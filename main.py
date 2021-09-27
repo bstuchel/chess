@@ -65,7 +65,9 @@ def play(dis):
                 return GameState.QUIT
 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                gui.pick_piece(event.pos)
+                result = gui.click(event.pos)
+                if result == 1:
+                    return GameState.GAME
                 need_update = True
 
             if event.type == pygame.MOUSEMOTION:
@@ -98,7 +100,6 @@ def play(dis):
                 choice = gui.menu_click(event.pos)
                 if choice == 1:
                     return GameState.GAME
-
 
 
 def menu(dis):

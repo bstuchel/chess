@@ -42,7 +42,6 @@ class GameGUI:
         if self.TRIAL_W < self.TRIAL_H: self.SQUARE_SIZE = self.TRIAL_W
         if self.SQUARE_SIZE > 100: self.SQUARE_SIZE = 100
         self.BOARD_SIZE = 8 * self.SQUARE_SIZE
-        self.MARGIN_WIDTH = self.WIDTH - self.BOARD_SIZE
         self.FILE_LABEL_Y = self.BOARD_SIZE - (self.SQUARE_SIZE // 3)
         self.RANK_LABEL_X = self.SQUARE_SIZE // 14
 
@@ -53,21 +52,32 @@ class GameGUI:
         self.RESULT_MENU_HEIGHT = (7 * self.SQUARE_SIZE) // 2
         self.WINNER_LABEL_Y = self.SQUARE_SIZE // 2
         self.TERM_LABEL_Y = 4 * self.SQUARE_SIZE // 3
-        self.BUTTON_X = self.SQUARE_SIZE
-        self.BUTTON_Y = 2 * self.SQUARE_SIZE
-        self.BUTTON_WIDTH = 3 * self.SQUARE_SIZE
-        self.BUTTON_HEIGHT = self.SQUARE_SIZE
-        self.BUTTON_LABEL_Y = 5 * self.SQUARE_SIZE // 2
-        self.BUTTON_X_ABS = self.RESULT_MENU_X + self.BUTTON_X
-        self.BUTTON_Y_ABS = self.RESULT_MENU_Y + self.BUTTON_Y
+        self.BTN_X = self.SQUARE_SIZE
+        self.BTN_Y = 2 * self.SQUARE_SIZE
+        self.BTN_WIDTH = 3 * self.SQUARE_SIZE
+        self.BTN_HEIGHT = self.SQUARE_SIZE
+        self.BTN_LABEL_Y = 5 * self.SQUARE_SIZE // 2
+        self.BTN_X_ABS = self.RESULT_MENU_X + self.BTN_X
+        self.BTN_Y_ABS = self.RESULT_MENU_Y + self.BTN_Y
+
+        # Sidebar
+        self.SB_WIDTH = self.WIDTH - self.BOARD_SIZE
+        self.SB_MARGIN = self.SB_WIDTH // 16
+        self.SB_BTN_WIDTH = self.SB_WIDTH - 2 * self.SB_MARGIN
+        self.SB_BTN_HEIGHT = self.SB_BTN_WIDTH // 3
+        self.SB_BTN_X = self.SB_MARGIN
+        self.SB_BTN_Y = self.BOARD_SIZE - self.SB_MARGIN - self.SB_BTN_HEIGHT
+        self.SB_BTN_X_ABS = self.BOARD_SIZE + self.SB_BTN_X
+        self.SB_BTN_Y_ABS = self.SB_BTN_Y
 
     def _define_fonts(self):
         """ Define the fonts used in the game GUI """
         self.LABEL_FONT = pygame.font.SysFont('bahnschrift', 
                                               self.SQUARE_SIZE // 4)
-        self.SCORE_FONT = pygame.font.SysFont('bahnschrift', 30)
         self.RESULTS_FONT = pygame.font.SysFont('bahnschrift', 
                                               self.SQUARE_SIZE // 3)
+        self.SB_FONT = pygame.font.SysFont('bahnschrift', 
+                                              self.SB_BTN_HEIGHT // 2)
 
     def _get_sprites(self):
         """ Define the sprites for each chess piece """
@@ -130,7 +140,7 @@ class GameGUI:
         black_promo_surface.blit(self.SPRITES['q'], (0, 3 * self.SQUARE_SIZE))
         return black_promo_surface
 
-    def _get_results_menu(self, button_hover=False):
+    def _get_results_menu(self, btn_hover=False):
         """ Create and return the results menu surface """
         results_surface = pygame.Surface((self.RESULT_MENU_WIDTH, 
                                           self.RESULT_MENU_HEIGHT))
@@ -160,18 +170,35 @@ class GameGUI:
                                [self.RESULT_MENU_WIDTH // 2 - width // 2, 
                                 self.TERM_LABEL_Y - height // 2])
 
-        # New Game Button
-        color = self.LIGHT_GREEN if button_hover else self.GREEN
+        # New Game BTN
+        color = self.LIGHT_GREEN if btn_hover else self.GREEN
         pygame.draw.rect(results_surface, color,
-                         (self.BUTTON_X, self.BUTTON_Y,
-                          self.BUTTON_WIDTH, self.BUTTON_HEIGHT))
+                         (self.BTN_X, self.BTN_Y,
+                          self.BTN_WIDTH, self.BTN_HEIGHT))
         new_game_label = self.RESULTS_FONT.render("New Game", True, self.WHITE)
         width = new_game_label.get_width()
         height = new_game_label.get_height()
         results_surface.blit(new_game_label, 
                                [self.RESULT_MENU_WIDTH // 2 - width // 2, 
-                                self.BUTTON_LABEL_Y - height // 2])
+                                self.BTN_LABEL_Y - height // 2])
         return results_surface
+
+    def _get_SB(self, btn_hover=False):
+        SB_surf = pygame.Surface((self.SB_WIDTH, self.BOARD_SIZE))
+        SB_surf.fill(self.DARK_GRAY)
+
+        # New Game BTN
+        color = self.LIGHT_GREEN if btn_hover else self.GREEN
+        pygame.draw.rect(SB_surf, color,
+                         (self.SB_BTN_X, self.SB_BTN_Y,
+                          self.SB_BTN_WIDTH, self.SB_BTN_HEIGHT))
+        new_game_label = self.SB_FONT.render("New Game", True, self.WHITE)
+        width = new_game_label.get_width()
+        height = new_game_label.get_height()
+        SB_surf.blit(new_game_label, [self.SB_WIDTH // 2 - width // 2, 
+            self.SB_BTN_Y + self.SB_BTN_HEIGHT // 2 - height // 2])
+
+        return SB_surf
 
     def update_display(self, pos):
         """ Updates the display by clearing the display to the blank board 
@@ -206,19 +233,40 @@ class GameGUI:
                 y -= self.SQUARE_SIZE // 2
                 self.dis.blit(self.SPRITES[in_hand_char], (x, y))
 
+        # Update SB
+        x, y = pos
+        if (x > self.SB_BTN_X_ABS and 
+            x < self.SB_BTN_X_ABS + self.SB_BTN_WIDTH and 
+            y > self.SB_BTN_Y_ABS and 
+            y < self.SB_BTN_Y_ABS + self.SB_BTN_HEIGHT):
+            self.dis.blit(self._get_SB(btn_hover=True), 
+                          (self.BOARD_SIZE, 0))
+        else:
+            self.dis.blit(self._get_SB(), (self.BOARD_SIZE, 0))
+
         pygame.display.update()
 
-    def pick_piece(self, pos):
+    def click(self, pos):
         """ Pick up a pieces given the square coordinates
         pos: Tuple containing the x and y coordinates of the cursor
         """
-        if self.in_hand:
-            self.in_hand == None
+        x, y = pos
+        if x > self.BOARD_SIZE:
+            if (x > self.SB_BTN_X_ABS and 
+            x < self.SB_BTN_X_ABS + self.SB_BTN_WIDTH and 
+            y > self.SB_BTN_Y_ABS and 
+            y < self.SB_BTN_Y_ABS + self.SB_BTN_HEIGHT):
+                return 1
+
         else:
-            file = pos[0] // self.SQUARE_SIZE
-            rank = 7 - (pos[1] // self.SQUARE_SIZE)
-            if file > -1 and file < 8 and rank > -1 and rank < 8:
-                self.in_hand = (file, rank)
+            if self.in_hand:
+                self.in_hand == None
+            else:
+                file = pos[0] // self.SQUARE_SIZE
+                rank = 7 - (pos[1] // self.SQUARE_SIZE)
+                if file > -1 and file < 8 and rank > -1 and rank < 8:
+                    self.in_hand = (file, rank)
+            return 0
 
     def put_piece(self, pos):
         """ Place a piece at the given coordinates 
@@ -253,7 +301,7 @@ class GameGUI:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+            if event.type == pygame.MOUSEBTNUP and event.BTN == 1:
                 x, y = event.pos
                 click_file = x // self.SQUARE_SIZE
                 click_rank = 7 - (y // self.SQUARE_SIZE)
@@ -268,11 +316,11 @@ class GameGUI:
     def display_menu(self, pos):
         """ Displays the results menu """
         x, y = pos
-        if (x > self.BUTTON_X_ABS and 
-            x < self.BUTTON_X_ABS + self.BUTTON_WIDTH and 
-            y > self.BUTTON_Y_ABS and 
-            y < self.BUTTON_Y_ABS + self.BUTTON_HEIGHT):
-            self.dis.blit(self._get_results_menu(button_hover=True), 
+        if (x > self.BTN_X_ABS and 
+            x < self.BTN_X_ABS + self.BTN_WIDTH and 
+            y > self.BTN_Y_ABS and 
+            y < self.BTN_Y_ABS + self.BTN_HEIGHT):
+            self.dis.blit(self._get_results_menu(btn_hover=True), 
                           (self.RESULT_MENU_X, self.RESULT_MENU_Y))
         else:
             self.dis.blit(self._get_results_menu(), (self.RESULT_MENU_X, 
@@ -280,10 +328,10 @@ class GameGUI:
         pygame.display.update()
 
     def menu_click(self, pos):
-        """ Returns the value 1 if the button is clicked """
+        """ Returns the value 1 if the BTN is clicked """
         x, y = pos
-        if (x > self.BUTTON_X_ABS and 
-            x < self.BUTTON_X_ABS + self.BUTTON_WIDTH and 
-            y > self.BUTTON_Y_ABS and 
-            y < self.BUTTON_Y_ABS + self.BUTTON_HEIGHT):
+        if (x > self.BTN_X_ABS and 
+            x < self.BTN_X_ABS + self.BTN_WIDTH and 
+            y > self.BTN_Y_ABS and 
+            y < self.BTN_Y_ABS + self.BTN_HEIGHT):
             return 1

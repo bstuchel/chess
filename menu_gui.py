@@ -45,14 +45,13 @@ class MenuGUI:
         the user.
         pos: Tuple containing the x and y coordinates of the cursor
         """
-        menu_surf = pygame.Surface((self.WIDTH, self.HEIGHT))
-        menu_surf.fill(self.DARK_GRAY)
+        self.dis.fill(self.DARK_GRAY)
 
         # Write Heading
         header_label = self.HEADING_FONT.render("Welcome to Chess!", True, self.WHITE)
         width = header_label.get_width()
         height = header_label.get_height()
-        menu_surf.blit(header_label, [self.WIDTH // 2 - width // 2, 
+        self.dis.blit(header_label, [self.WIDTH // 2 - width // 2, 
                                       self.HEADING_Y - height // 2])
 
         # Draw Button
@@ -61,20 +60,19 @@ class MenuGUI:
             x < self.BUTTON_X + self.BUTTON_WIDTH and 
             y > self.BUTTON_Y and 
             y < self.BUTTON_Y + self.BUTTON_HEIGHT):
-            pygame.draw.rect(menu_surf, self.LIGHT_GREEN,
+            pygame.draw.rect(self.dis, self.LIGHT_GREEN,
                              (self.BUTTON_X, self.BUTTON_Y,
                               self.BUTTON_WIDTH, self.BUTTON_HEIGHT))
         else:
-            pygame.draw.rect(menu_surf, self.GREEN,
+            pygame.draw.rect(self.dis, self.GREEN,
                              (self.BUTTON_X, self.BUTTON_Y,
                               self.BUTTON_WIDTH, self.BUTTON_HEIGHT))
         header_label = self.LABEL_FONT.render("New Game", True, self.WHITE)
         width = header_label.get_width()
         height = header_label.get_height()
-        menu_surf.blit(header_label, [self.WIDTH // 2 - width // 2, 
+        self.dis.blit(header_label, [self.WIDTH // 2 - width // 2, 
                                       self.HEIGHT // 2 - height // 2])
 
-        self.dis.blit(menu_surf, [0, 0])
         pygame.display.update()
 
     def click(self, pos):
