@@ -65,10 +65,16 @@ class GameGUI:
         self.SB_MARGIN = self.SB_WIDTH // 16
         self.SB_BTN_WIDTH = self.SB_WIDTH - 2 * self.SB_MARGIN
         self.SB_BTN_HEIGHT = self.SB_BTN_WIDTH // 3
-        self.SB_BTN_X = self.SB_MARGIN
-        self.SB_BTN_Y = self.BOARD_SIZE - self.SB_MARGIN - self.SB_BTN_HEIGHT
-        self.SB_BTN_X_ABS = self.BOARD_SIZE + self.SB_BTN_X
-        self.SB_BTN_Y_ABS = self.SB_BTN_Y
+        # Main Menu Button
+        self.SB_MM_X = self.SB_MARGIN
+        self.SB_MM_Y = self.BOARD_SIZE - 2*(self.SB_MARGIN+self.SB_BTN_HEIGHT)
+        self.SB_MM_X_ABS = self.BOARD_SIZE + self.SB_MM_X
+        self.SB_MM_Y_ABS = self.SB_MM_Y
+        # New Game Button
+        self.SB_NG_X = self.SB_MARGIN
+        self.SB_NG_Y = self.BOARD_SIZE - self.SB_MARGIN - self.SB_BTN_HEIGHT
+        self.SB_NG_X_ABS = self.BOARD_SIZE + self.SB_NG_X
+        self.SB_NG_Y_ABS = self.SB_NG_Y
 
     def _define_fonts(self):
         """ Define the fonts used in the game GUI """
@@ -183,20 +189,31 @@ class GameGUI:
                                 self.BTN_LABEL_Y - height // 2])
         return results_surface
 
-    def _get_SB(self, btn_hover=False):
+    def _get_SB(self, mm_hover=False, ng_hover=False):
         SB_surf = pygame.Surface((self.SB_WIDTH, self.BOARD_SIZE))
         SB_surf.fill(self.DARK_GRAY)
 
-        # New Game BTN
-        color = self.LIGHT_GREEN if btn_hover else self.GREEN
+        # Main Menu Button
+        color = self.LIGHT_GREEN if mm_hover else self.GREEN
         pygame.draw.rect(SB_surf, color,
-                         (self.SB_BTN_X, self.SB_BTN_Y,
+                         (self.SB_MM_X, self.SB_MM_Y,
+                          self.SB_BTN_WIDTH, self.SB_BTN_HEIGHT))
+        main_menu_label = self.SB_FONT.render("Main Menu", True, self.WHITE)
+        width = main_menu_label.get_width()
+        height = main_menu_label.get_height()
+        SB_surf.blit(main_menu_label, [self.SB_WIDTH // 2 - width // 2, 
+            self.SB_MM_Y + self.SB_BTN_HEIGHT // 2 - height // 2])
+
+        # New Game Button
+        color = self.LIGHT_GREEN if ng_hover else self.GREEN
+        pygame.draw.rect(SB_surf, color,
+                         (self.SB_NG_X, self.SB_NG_Y,
                           self.SB_BTN_WIDTH, self.SB_BTN_HEIGHT))
         new_game_label = self.SB_FONT.render("New Game", True, self.WHITE)
         width = new_game_label.get_width()
         height = new_game_label.get_height()
         SB_surf.blit(new_game_label, [self.SB_WIDTH // 2 - width // 2, 
-            self.SB_BTN_Y + self.SB_BTN_HEIGHT // 2 - height // 2])
+            self.SB_NG_Y + self.SB_BTN_HEIGHT // 2 - height // 2])
 
         return SB_surf
 
@@ -235,12 +252,18 @@ class GameGUI:
 
         # Update SB
         x, y = pos
-        if (x > self.SB_BTN_X_ABS and 
-            x < self.SB_BTN_X_ABS + self.SB_BTN_WIDTH and 
-            y > self.SB_BTN_Y_ABS and 
-            y < self.SB_BTN_Y_ABS + self.SB_BTN_HEIGHT):
-            self.dis.blit(self._get_SB(btn_hover=True), 
+        if (x > self.SB_MM_X_ABS and 
+            x < self.SB_MM_X_ABS + self.SB_BTN_WIDTH and 
+            y > self.SB_MM_Y_ABS and 
+            y < self.SB_MM_Y_ABS + self.SB_BTN_HEIGHT):
+            self.dis.blit(self._get_SB(mm_hover=True), 
                           (self.BOARD_SIZE, 0))
+        elif (x > self.SB_NG_X_ABS and 
+            x < self.SB_NG_X_ABS + self.SB_BTN_WIDTH and 
+            y > self.SB_NG_Y_ABS and 
+            y < self.SB_NG_Y_ABS + self.SB_BTN_HEIGHT):
+            self.dis.blit(self._get_SB(ng_hover=True), 
+                          (self.BOARD_SIZE, 0))                        
         else:
             self.dis.blit(self._get_SB(), (self.BOARD_SIZE, 0))
 
@@ -252,12 +275,16 @@ class GameGUI:
         """
         x, y = pos
         if x > self.BOARD_SIZE:
-            if (x > self.SB_BTN_X_ABS and 
-            x < self.SB_BTN_X_ABS + self.SB_BTN_WIDTH and 
-            y > self.SB_BTN_Y_ABS and 
-            y < self.SB_BTN_Y_ABS + self.SB_BTN_HEIGHT):
+            if (x > self.SB_MM_X_ABS and 
+            x < self.SB_MM_X_ABS + self.SB_BTN_WIDTH and 
+            y > self.SB_MM_Y_ABS and 
+            y < self.SB_MM_Y_ABS + self.SB_BTN_HEIGHT):
+                return 2
+            elif (x > self.SB_NG_X_ABS and 
+            x < self.SB_NG_X_ABS + self.SB_BTN_WIDTH and 
+            y > self.SB_NG_Y_ABS and 
+            y < self.SB_NG_Y_ABS + self.SB_BTN_HEIGHT):
                 return 1
-
         else:
             if self.in_hand:
                 self.in_hand == None
@@ -320,7 +347,7 @@ class GameGUI:
             x < self.BTN_X_ABS + self.BTN_WIDTH and 
             y > self.BTN_Y_ABS and 
             y < self.BTN_Y_ABS + self.BTN_HEIGHT):
-            self.dis.blit(self._get_results_menu(btn_hover=True), 
+            self.dis.blit(self._get_results_menu(ng_hover=True), 
                           (self.RESULT_MENU_X, self.RESULT_MENU_Y))
         else:
             self.dis.blit(self._get_results_menu(), (self.RESULT_MENU_X, 
