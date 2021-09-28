@@ -3,11 +3,11 @@ This is the main file for the chess application.  It contains the mainloop
 and control flow for the application.
 
 To Do:
-    1. Add a main menu screen
-    2. Add the AI to play against
-    3. Add the current game score (number of pieces captured)
-    4. Add a game clock
-    5. Add the ability to flip the board
+    - Add AI for singleplayer games
+    - Add current game score (number of pieces captured)
+    - Add a game clock
+    - Add ability to flip the board
+    - Add ability to undo moves
 """
 import pygame
 pygame.init()

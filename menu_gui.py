@@ -9,10 +9,7 @@ class MenuGUI:
     DARK_GRAY = (49, 46, 43)
     GREEN = (118, 150, 86)
     LIGHT_GREEN = (168, 200, 136)
-    CREAM = (238, 238, 210)
     WHITE = (255, 255, 255)
-    LIGHT_GRAY = (241, 241, 241)
-    SQUARE_COLORS = (CREAM, GREEN)
 
     def __init__(self, dis):
         dis.fill(self.DARK_GRAY)
@@ -48,7 +45,8 @@ class MenuGUI:
         self.dis.fill(self.DARK_GRAY)
 
         # Write Heading
-        header_label = self.HEADING_FONT.render("Welcome to Chess!", True, self.WHITE)
+        header_label = self.HEADING_FONT.render("Welcome to Chess!", True, 
+                                                self.WHITE)
         width = header_label.get_width()
         height = header_label.get_height()
         self.dis.blit(header_label, [self.WIDTH // 2 - width // 2, 
@@ -76,7 +74,9 @@ class MenuGUI:
         pygame.display.update()
 
     def click(self, pos):
-        """ Returns the value 1 if the button is clicked """
+        """ Returns the value 1 if the button is clicked 
+        pos: Tuple containing the x and y coordinates of the cursor
+        """
         x, y = pos
         if (x > self.BUTTON_X and 
             x < self.BUTTON_X + self.BUTTON_WIDTH and 

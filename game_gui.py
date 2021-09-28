@@ -46,19 +46,20 @@ class GameGUI:
         self.RANK_LABEL_X = self.SQUARE_SIZE // 14
 
         # Results Menu
-        self.RESULT_MENU_X = (3 * self.SQUARE_SIZE) // 2
-        self.RESULT_MENU_Y = (9 * self.SQUARE_SIZE) // 4
-        self.RESULT_MENU_WIDTH = 5 * self.SQUARE_SIZE
-        self.RESULT_MENU_HEIGHT = (7 * self.SQUARE_SIZE) // 2
+        self.RM_X = (3 * self.SQUARE_SIZE) // 2
+        self.RM_Y = (9 * self.SQUARE_SIZE) // 4
+        self.RM_WIDTH = 5 * self.SQUARE_SIZE
+        self.RM_HEIGHT = (7 * self.SQUARE_SIZE) // 2
         self.WINNER_LABEL_Y = self.SQUARE_SIZE // 2
         self.TERM_LABEL_Y = 4 * self.SQUARE_SIZE // 3
-        self.BTN_X = self.SQUARE_SIZE
-        self.BTN_Y = 2 * self.SQUARE_SIZE
-        self.BTN_WIDTH = 3 * self.SQUARE_SIZE
-        self.BTN_HEIGHT = self.SQUARE_SIZE
-        self.BTN_LABEL_Y = 5 * self.SQUARE_SIZE // 2
-        self.BTN_X_ABS = self.RESULT_MENU_X + self.BTN_X
-        self.BTN_Y_ABS = self.RESULT_MENU_Y + self.BTN_Y
+        # New Game Button
+        self.RM_NG_X = self.SQUARE_SIZE
+        self.RM_NG_Y = 2 * self.SQUARE_SIZE
+        self.RM_NG_WIDTH = 3 * self.SQUARE_SIZE
+        self.RM_NG_HEIGHT = self.SQUARE_SIZE
+        self.RM_NG_LABEL_Y = 5 * self.SQUARE_SIZE // 2
+        self.RM_NG_X_ABS = self.RM_X + self.RM_NG_X
+        self.RM_NG_Y_ABS = self.RM_Y + self.RM_NG_Y
 
         # Sidebar
         self.SB_WIDTH = self.WIDTH - self.BOARD_SIZE
@@ -147,9 +148,12 @@ class GameGUI:
         return black_promo_surface
 
     def _get_results_menu(self, btn_hover=False):
-        """ Create and return the results menu surface """
-        results_surface = pygame.Surface((self.RESULT_MENU_WIDTH, 
-                                          self.RESULT_MENU_HEIGHT))
+        """ Create and return the results menu surface 
+        mm_hover: True if hovering over button button
+        return: result menu surface
+        """
+        results_surface = pygame.Surface((self.RM_WIDTH, 
+                                          self.RM_HEIGHT))
         results_surface.fill(self.DARK_GRAY)
         outcome = self.game.board.outcome()
 
@@ -163,52 +167,51 @@ class GameGUI:
         winner_label = self.RESULTS_FONT.render(label, True, self.WHITE)
         width = winner_label.get_width()
         height = winner_label.get_height()
-        results_surface.blit(winner_label, 
-                               [self.RESULT_MENU_WIDTH // 2 - width // 2, 
-                                self.WINNER_LABEL_Y - height // 2])
+        results_surface.blit(winner_label, [self.RM_WIDTH // 2 - width // 2, 
+                                            self.WINNER_LABEL_Y - height // 2])
 
         # Temination Label
         termination = outcome.termination.name.title()
         term_label = self.RESULTS_FONT.render(termination, True, self.WHITE)
         width = term_label.get_width()
         height = term_label.get_height()
-        results_surface.blit(term_label, 
-                               [self.RESULT_MENU_WIDTH // 2 - width // 2, 
-                                self.TERM_LABEL_Y - height // 2])
+        results_surface.blit(term_label, [self.RM_WIDTH // 2 - width // 2, 
+                                          self.TERM_LABEL_Y - height // 2])
 
         # New Game BTN
         color = self.LIGHT_GREEN if btn_hover else self.GREEN
-        pygame.draw.rect(results_surface, color,
-                         (self.BTN_X, self.BTN_Y,
-                          self.BTN_WIDTH, self.BTN_HEIGHT))
+        pygame.draw.rect(results_surface, color, (self.RM_NG_X, self.RM_NG_Y, 
+                                        self.RM_NG_WIDTH, self.RM_NG_HEIGHT))
         new_game_label = self.RESULTS_FONT.render("New Game", True, self.WHITE)
         width = new_game_label.get_width()
         height = new_game_label.get_height()
-        results_surface.blit(new_game_label, 
-                               [self.RESULT_MENU_WIDTH // 2 - width // 2, 
-                                self.BTN_LABEL_Y - height // 2])
+        results_surface.blit(new_game_label, [self.RM_WIDTH // 2 - width // 2,
+                                            self.RM_NG_LABEL_Y - height // 2])
         return results_surface
 
     def _get_SB(self, mm_hover=False, ng_hover=False):
+        """ Creates and returns the sidebar surface 
+        mm_hover: True if hovering over main menu button
+        ng_hover: True if hovering over the new game button
+        return: Sidebar surface
+        """
         SB_surf = pygame.Surface((self.SB_WIDTH, self.BOARD_SIZE))
         SB_surf.fill(self.DARK_GRAY)
 
         # Main Menu Button
         color = self.LIGHT_GREEN if mm_hover else self.GREEN
-        pygame.draw.rect(SB_surf, color,
-                         (self.SB_MM_X, self.SB_MM_Y,
-                          self.SB_BTN_WIDTH, self.SB_BTN_HEIGHT))
+        pygame.draw.rect(SB_surf, color, (self.SB_MM_X, self.SB_MM_Y,
+                              self.SB_BTN_WIDTH, self.SB_BTN_HEIGHT))
         main_menu_label = self.SB_FONT.render("Main Menu", True, self.WHITE)
         width = main_menu_label.get_width()
         height = main_menu_label.get_height()
         SB_surf.blit(main_menu_label, [self.SB_WIDTH // 2 - width // 2, 
-            self.SB_MM_Y + self.SB_BTN_HEIGHT // 2 - height // 2])
+                 self.SB_MM_Y + self.SB_BTN_HEIGHT // 2 - height // 2])
 
         # New Game Button
         color = self.LIGHT_GREEN if ng_hover else self.GREEN
-        pygame.draw.rect(SB_surf, color,
-                         (self.SB_NG_X, self.SB_NG_Y,
-                          self.SB_BTN_WIDTH, self.SB_BTN_HEIGHT))
+        pygame.draw.rect(SB_surf, color, (self.SB_NG_X, self.SB_NG_Y, 
+                                self.SB_BTN_WIDTH, self.SB_BTN_HEIGHT))
         new_game_label = self.SB_FONT.render("New Game", True, self.WHITE)
         width = new_game_label.get_width()
         height = new_game_label.get_height()
@@ -219,7 +222,7 @@ class GameGUI:
 
     def update_display(self, pos):
         """ Updates the display by clearing the display to the blank board 
-        surface.  Pieces are then drawn to the board including pieces held by 
+        surface.  Pieces are then drawn to the board including pieces held by
         the user.
         pos: Tuple containing the x and y coordinates of the cursor
         """
@@ -250,7 +253,7 @@ class GameGUI:
                 y -= self.SQUARE_SIZE // 2
                 self.dis.blit(self.SPRITES[in_hand_char], (x, y))
 
-        # Update SB
+        # Update sidebar
         x, y = pos
         if (x > self.SB_MM_X_ABS and 
             x < self.SB_MM_X_ABS + self.SB_BTN_WIDTH and 
@@ -270,11 +273,15 @@ class GameGUI:
         pygame.display.update()
 
     def click(self, pos):
-        """ Pick up a pieces given the square coordinates
+        """ Called when the mouse is left clicked.  If clicked in the sidebar,
+        button presses are checked.  If click on board, pick up a pieces at
+        the square coordinates and put in hand
         pos: Tuple containing the x and y coordinates of the cursor
+        returns 1 if new game button is clicked, 2 if the main menu button is 
+        clicked and 0 otherwise
         """
         x, y = pos
-        if x > self.BOARD_SIZE:
+        if x > self.BOARD_SIZE:  # Sidebar menu
             if (x > self.SB_MM_X_ABS and 
             x < self.SB_MM_X_ABS + self.SB_BTN_WIDTH and 
             y > self.SB_MM_Y_ABS and 
@@ -285,7 +292,7 @@ class GameGUI:
             y > self.SB_NG_Y_ABS and 
             y < self.SB_NG_Y_ABS + self.SB_BTN_HEIGHT):
                 return 1
-        else:
+        else:  # Board move
             if self.in_hand:
                 self.in_hand == None
             else:
@@ -341,24 +348,28 @@ class GameGUI:
                 return None
 
     def display_menu(self, pos):
-        """ Displays the results menu """
+        """ Displays the results menu 
+        pos: Tuple containing the x and y coordinates of the cursor
+        """
         x, y = pos
-        if (x > self.BTN_X_ABS and 
-            x < self.BTN_X_ABS + self.BTN_WIDTH and 
-            y > self.BTN_Y_ABS and 
-            y < self.BTN_Y_ABS + self.BTN_HEIGHT):
-            self.dis.blit(self._get_results_menu(ng_hover=True), 
-                          (self.RESULT_MENU_X, self.RESULT_MENU_Y))
+        if (x > self.RM_NG_X_ABS and 
+            x < self.RM_NG_X_ABS + self.RM_NG_WIDTH and 
+            y > self.RM_NG_Y_ABS and 
+            y < self.RM_NG_Y_ABS + self.RM_NG_HEIGHT):
+            self.dis.blit(self._get_results_menu(btn_hover=True), 
+                          (self.RM_X, self.RM_Y))
         else:
-            self.dis.blit(self._get_results_menu(), (self.RESULT_MENU_X, 
-                                                     self.RESULT_MENU_Y))
+            self.dis.blit(self._get_results_menu(), (self.RM_X, 
+                                                     self.RM_Y))
         pygame.display.update()
 
     def menu_click(self, pos):
-        """ Returns the value 1 if the BTN is clicked """
+        """ Returns the value 1 if the BTN is clicked 
+        pos: Tuple containing the x and y coordinates of the cursor
+        """
         x, y = pos
-        if (x > self.BTN_X_ABS and 
-            x < self.BTN_X_ABS + self.BTN_WIDTH and 
-            y > self.BTN_Y_ABS and 
-            y < self.BTN_Y_ABS + self.BTN_HEIGHT):
+        if (x > self.RM_NG_X_ABS and 
+            x < self.RM_NG_X_ABS + self.RM_NG_WIDTH and 
+            y > self.RM_NG_Y_ABS and 
+            y < self.RM_NG_Y_ABS + self.RM_NG_HEIGHT):
             return 1
