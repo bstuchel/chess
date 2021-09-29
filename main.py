@@ -8,6 +8,7 @@ To Do:
     - Add a game clock
     - Add ability to flip the board
     - Add ability to undo moves
+    - Add a display of previous moves
 """
 import pygame
 pygame.init()

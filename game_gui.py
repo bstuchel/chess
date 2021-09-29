@@ -66,6 +66,18 @@ class GameGUI:
         self.SB_MARGIN = self.SB_WIDTH // 16
         self.SB_BTN_WIDTH = self.SB_WIDTH - 2 * self.SB_MARGIN
         self.SB_BTN_HEIGHT = self.SB_BTN_WIDTH // 3
+        # Score
+        self.SB_SC_HEAD_FONT = self.SB_WIDTH // 8
+        self.SB_SC_LABEL_FONT = self.SB_WIDTH // 10
+        self.SB_SC_HEAD_Y = self.BOARD_SIZE // 3
+        self.SB_SC_LABEL_Y = (self.SB_SC_HEAD_Y + self.SB_SC_HEAD_FONT + 
+                              self.SB_MARGIN)
+        self.SB_SC_LABEL_W_X = self.SB_WIDTH // 4
+        self.SB_SC_LABEL_B_X = 3 * self.SB_WIDTH // 4
+        self.SB_SC_SCORE_Y = (self.SB_SC_LABEL_Y + self.SB_SC_LABEL_FONT + 
+                              self.SB_MARGIN)
+        self.SB_SC_SCORE_W_X = self.SB_WIDTH // 4
+        self.SB_SC_SCORE_B_X = 3 * self.SB_WIDTH // 4
         # Main Menu Button
         self.SB_MM_X = self.SB_MARGIN
         self.SB_MM_Y = self.BOARD_SIZE - 2*(self.SB_MARGIN+self.SB_BTN_HEIGHT)
@@ -83,8 +95,12 @@ class GameGUI:
                                               self.SQUARE_SIZE // 4)
         self.RESULTS_FONT = pygame.font.SysFont('bahnschrift', 
                                               self.SQUARE_SIZE // 3)
-        self.SB_FONT = pygame.font.SysFont('bahnschrift', 
+        self.SB_FONT_BTN = pygame.font.SysFont('bahnschrift', 
                                               self.SB_BTN_HEIGHT // 2)
+        self.SB_FONT_HEADING = pygame.font.SysFont('bahnschrift', 
+                                              self.SB_SC_HEAD_FONT)
+        self.SB_FONT_SCORE = pygame.font.SysFont('bahnschrift', 
+                                              self.SB_SC_LABEL_FONT)
 
     def _get_sprites(self):
         """ Define the sprites for each chess piece """
@@ -202,22 +218,51 @@ class GameGUI:
         color = self.LIGHT_GREEN if mm_hover else self.GREEN
         pygame.draw.rect(SB_surf, color, (self.SB_MM_X, self.SB_MM_Y,
                               self.SB_BTN_WIDTH, self.SB_BTN_HEIGHT))
-        main_menu_label = self.SB_FONT.render("Main Menu", True, self.WHITE)
-        width = main_menu_label.get_width()
-        height = main_menu_label.get_height()
-        SB_surf.blit(main_menu_label, [self.SB_WIDTH // 2 - width // 2, 
+        mm_label = self.SB_FONT_BTN.render("Main Menu", True, self.WHITE)
+        width = mm_label.get_width()
+        height = mm_label.get_height()
+        SB_surf.blit(mm_label, [self.SB_WIDTH // 2 - width // 2, 
                  self.SB_MM_Y + self.SB_BTN_HEIGHT // 2 - height // 2])
 
         # New Game Button
         color = self.LIGHT_GREEN if ng_hover else self.GREEN
         pygame.draw.rect(SB_surf, color, (self.SB_NG_X, self.SB_NG_Y, 
                                 self.SB_BTN_WIDTH, self.SB_BTN_HEIGHT))
-        new_game_label = self.SB_FONT.render("New Game", True, self.WHITE)
-        width = new_game_label.get_width()
-        height = new_game_label.get_height()
-        SB_surf.blit(new_game_label, [self.SB_WIDTH // 2 - width // 2, 
+        ng_label = self.SB_FONT_BTN.render("New Game", True, self.WHITE)
+        width = ng_label.get_width()
+        height = ng_label.get_height()
+        SB_surf.blit(ng_label, [self.SB_WIDTH // 2 - width // 2, 
             self.SB_NG_Y + self.SB_BTN_HEIGHT // 2 - height // 2])
 
+        # Game Score
+        heading_label = self.SB_FONT_HEADING.render("Captured Value", True, 
+                                                    self.WHITE)
+        width = heading_label.get_width()
+        height = heading_label.get_height()
+        SB_surf.blit(heading_label, [self.SB_WIDTH // 2 - width // 2, 
+                                     self.SB_SC_HEAD_Y - height // 2])
+        white_label = self.SB_FONT_SCORE.render("White", True, self.WHITE)
+        width = white_label.get_width()
+        height = white_label.get_height()
+        SB_surf.blit(white_label, [self.SB_SC_LABEL_W_X - width // 2, 
+                                   self.SB_SC_LABEL_Y - height // 2])
+        black_label = self.SB_FONT_SCORE.render("Black", True, self.WHITE)
+        width = black_label.get_width()
+        height = black_label.get_height()
+        SB_surf.blit(black_label, [self.SB_SC_LABEL_B_X - width // 2, 
+                                   self.SB_SC_LABEL_Y - height // 2])
+        white_score = self.SB_FONT_SCORE.render(str(self.game.captured_value[1]), 
+                                                True, self.WHITE)
+        width = white_score.get_width()
+        height = white_score.get_height()
+        SB_surf.blit(white_score, [self.SB_SC_SCORE_W_X - width // 2, 
+                                   self.SB_SC_SCORE_Y - height // 2])
+        black_score = self.SB_FONT_SCORE.render(str(self.game.captured_value[0]), 
+                                                True, self.WHITE)
+        width = black_score.get_width()
+        height = black_score.get_height()
+        SB_surf.blit(black_score, [self.SB_SC_SCORE_B_X - width // 2, 
+                                   self.SB_SC_SCORE_Y - height // 2])
         return SB_surf
 
     def update_display(self, pos):

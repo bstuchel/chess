@@ -25,7 +25,7 @@ class MenuGUI:
         # Menu Data
         self.HEADING_Y = self.HEIGHT // 4
         self.BUTTON_HEIGHT = self.HEIGHT // 10
-        self.BUTTON_WIDTH = self.WIDTH // 4
+        self.BUTTON_WIDTH = 3 * self.BUTTON_HEIGHT
         self.BUTTON_X = self.WIDTH // 2 - self.BUTTON_WIDTH // 2
         self.BUTTON_Y = self.HEIGHT // 2 - self.BUTTON_HEIGHT // 2
 
