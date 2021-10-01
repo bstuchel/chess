@@ -29,6 +29,7 @@ class GameGUI:
         self.black_promo_surf = self._black_promo_menu()
         self.game = game
         self.in_hand = None
+        self.board_flipped = False
 
     def _define_geometry(self):
         """ Define geometry used in the game GUI """
@@ -78,6 +79,11 @@ class GameGUI:
                               self.SB_MARGIN)
         self.SB_SC_SCORE_W_X = self.SB_WIDTH // 4
         self.SB_SC_SCORE_B_X = 3 * self.SB_WIDTH // 4
+        # Flip Board Button
+        self.SB_FB_X = self.SB_MARGIN
+        self.SB_FB_Y = self.SB_MARGIN
+        self.SB_FB_X_ABS = self.BOARD_SIZE + self.SB_FB_X
+        self.SB_FB_Y_ABS = self.SB_FB_Y
         # Main Menu Button
         self.SB_MM_X = self.SB_MARGIN
         self.SB_MM_Y = self.BOARD_SIZE - 2*(self.SB_MARGIN+self.SB_BTN_HEIGHT)
@@ -205,7 +211,7 @@ class GameGUI:
                                             self.RM_NG_LABEL_Y - height // 2])
         return results_surface
 
-    def _get_SB(self, mm_hover=False, ng_hover=False):
+    def _get_SB(self, fb_hover=False, mm_hover=False, ng_hover=False):
         """ Creates and returns the sidebar surface 
         mm_hover: True if hovering over main menu button
         ng_hover: True if hovering over the new game button
@@ -213,6 +219,16 @@ class GameGUI:
         """
         SB_surf = pygame.Surface((self.SB_WIDTH, self.BOARD_SIZE))
         SB_surf.fill(self.DARK_GRAY)
+
+        # Flip Board Button
+        color = self.LIGHT_GREEN if fb_hover else self.GREEN
+        pygame.draw.rect(SB_surf, color, (self.SB_FB_X, self.SB_FB_Y,
+                              self.SB_BTN_WIDTH, self.SB_BTN_HEIGHT))
+        fb_label = self.SB_FONT_BTN.render("Flip Board", True, self.WHITE)
+        width = fb_label.get_width()
+        height = fb_label.get_height()
+        SB_surf.blit(fb_label, [self.SB_WIDTH // 2 - width // 2, 
+                 self.SB_FB_Y + self.SB_BTN_HEIGHT // 2 - height // 2])
 
         # Main Menu Button
         color = self.LIGHT_GREEN if mm_hover else self.GREEN
@@ -276,7 +292,10 @@ class GameGUI:
         rank = 7
         file = 0
         in_hand_char = None
-        for char in self.game.board.board_fen():
+        board_fen = self.game.board.board_fen()
+        if self.board_flipped:
+            board_fen = self.game.board.transform(chess.flip_vertical).transform(chess.flip_horizontal).board_fen()
+        for char in board_fen:
             if char == '/':
                 file = 0
                 rank -= 1
@@ -300,7 +319,13 @@ class GameGUI:
 
         # Update sidebar
         x, y = pos
-        if (x > self.SB_MM_X_ABS and 
+        if (x > self.SB_FB_X_ABS and 
+            x < self.SB_FB_X_ABS + self.SB_BTN_WIDTH and 
+            y > self.SB_FB_Y_ABS and 
+            y < self.SB_FB_Y_ABS + self.SB_BTN_HEIGHT):
+            self.dis.blit(self._get_SB(fb_hover=True), 
+                          (self.BOARD_SIZE, 0))
+        elif (x > self.SB_MM_X_ABS and 
             x < self.SB_MM_X_ABS + self.SB_BTN_WIDTH and 
             y > self.SB_MM_Y_ABS and 
             y < self.SB_MM_Y_ABS + self.SB_BTN_HEIGHT):
@@ -327,15 +352,20 @@ class GameGUI:
         """
         x, y = pos
         if x > self.BOARD_SIZE:  # Sidebar menu
-            if (x > self.SB_MM_X_ABS and 
+            if (x > self.SB_FB_X_ABS and 
+            x < self.SB_FB_X_ABS + self.SB_BTN_WIDTH and 
+            y > self.SB_FB_Y_ABS and 
+            y < self.SB_FB_Y_ABS + self.SB_BTN_HEIGHT): # Flip Board
+                self.board_flipped = not self.board_flipped
+            elif (x > self.SB_MM_X_ABS and 
             x < self.SB_MM_X_ABS + self.SB_BTN_WIDTH and 
             y > self.SB_MM_Y_ABS and 
-            y < self.SB_MM_Y_ABS + self.SB_BTN_HEIGHT):
+            y < self.SB_MM_Y_ABS + self.SB_BTN_HEIGHT): # Main Menu
                 return 2
             elif (x > self.SB_NG_X_ABS and 
             x < self.SB_NG_X_ABS + self.SB_BTN_WIDTH and 
             y > self.SB_NG_Y_ABS and 
-            y < self.SB_NG_Y_ABS + self.SB_BTN_HEIGHT):
+            y < self.SB_NG_Y_ABS + self.SB_BTN_HEIGHT): # New Game
                 return 1
         else:  # Board move
             if self.in_hand:
