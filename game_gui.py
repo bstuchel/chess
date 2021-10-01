@@ -84,6 +84,18 @@ class GameGUI:
         self.SB_FB_Y = self.SB_MARGIN
         self.SB_FB_X_ABS = self.BOARD_SIZE + self.SB_FB_X
         self.SB_FB_Y_ABS = self.SB_FB_Y
+        # Undo Button
+        self.SB_UD_WIDTH = self.SB_BTN_WIDTH // 2 - self.SB_MARGIN // 2
+        self.SB_UD_X = self.SB_MARGIN
+        self.SB_UD_Y = 2 * self.SB_MARGIN + self.SB_BTN_HEIGHT
+        self.SB_UD_X_ABS = self.BOARD_SIZE + self.SB_UD_X
+        self.SB_UD_Y_ABS = self.SB_UD_Y        
+        # Redo Button
+        self.SB_RD_WIDTH = self.SB_BTN_WIDTH // 2 - self.SB_MARGIN // 2
+        self.SB_RD_X = 2 * self.SB_MARGIN + self.SB_UD_WIDTH
+        self.SB_RD_Y = 2 * self.SB_MARGIN + self.SB_BTN_HEIGHT
+        self.SB_RD_X_ABS = self.BOARD_SIZE + self.SB_RD_X
+        self.SB_RD_Y_ABS = self.SB_RD_Y
         # Main Menu Button
         self.SB_MM_X = self.SB_MARGIN
         self.SB_MM_Y = self.BOARD_SIZE - 2*(self.SB_MARGIN+self.SB_BTN_HEIGHT)
@@ -211,7 +223,7 @@ class GameGUI:
                                             self.RM_NG_LABEL_Y - height // 2])
         return results_surface
 
-    def _get_SB(self, fb_hover=False, mm_hover=False, ng_hover=False):
+    def _get_SB(self, fb_hover=False, ud_hover=False, rd_hover=False, mm_hover=False, ng_hover=False):
         """ Creates and returns the sidebar surface 
         mm_hover: True if hovering over main menu button
         ng_hover: True if hovering over the new game button
@@ -229,6 +241,26 @@ class GameGUI:
         height = fb_label.get_height()
         SB_surf.blit(fb_label, [self.SB_WIDTH // 2 - width // 2, 
                  self.SB_FB_Y + self.SB_BTN_HEIGHT // 2 - height // 2])
+
+        # Undo Button
+        color = self.LIGHT_GREEN if ud_hover else self.GREEN
+        pygame.draw.rect(SB_surf, color, (self.SB_UD_X, self.SB_UD_Y,
+                              self.SB_UD_WIDTH, self.SB_BTN_HEIGHT))
+        ud_label = self.SB_FONT_BTN.render("Undo", True, self.WHITE)
+        width = ud_label.get_width()
+        height = ud_label.get_height()
+        SB_surf.blit(ud_label, [self.SB_UD_X + self.SB_UD_WIDTH // 2 - width // 2, 
+                 self.SB_UD_Y + self.SB_BTN_HEIGHT // 2 - height // 2])
+
+        # Redo Button
+        color = self.LIGHT_GREEN if rd_hover else self.GREEN
+        pygame.draw.rect(SB_surf, color, (self.SB_RD_X, self.SB_RD_Y,
+                              self.SB_RD_WIDTH, self.SB_BTN_HEIGHT))
+        rd_label = self.SB_FONT_BTN.render("Redo", True, self.WHITE)
+        width = rd_label.get_width()
+        height = rd_label.get_height()
+        SB_surf.blit(rd_label, [self.SB_RD_X + self.SB_RD_WIDTH // 2 - width // 2, 
+                 self.SB_RD_Y + self.SB_BTN_HEIGHT // 2 - height // 2])
 
         # Main Menu Button
         color = self.LIGHT_GREEN if mm_hover else self.GREEN
@@ -325,6 +357,18 @@ class GameGUI:
             y < self.SB_FB_Y_ABS + self.SB_BTN_HEIGHT):
             self.dis.blit(self._get_SB(fb_hover=True), 
                           (self.BOARD_SIZE, 0))
+        elif (x > self.SB_UD_X_ABS and 
+            x < self.SB_UD_X_ABS + self.SB_UD_WIDTH and 
+            y > self.SB_UD_Y_ABS and 
+            y < self.SB_UD_Y_ABS + self.SB_BTN_HEIGHT):
+            self.dis.blit(self._get_SB(ud_hover=True), 
+                          (self.BOARD_SIZE, 0))
+        elif (x > self.SB_RD_X_ABS and 
+            x < self.SB_RD_X_ABS + self.SB_RD_WIDTH and 
+            y > self.SB_RD_Y_ABS and 
+            y < self.SB_RD_Y_ABS + self.SB_BTN_HEIGHT):
+            self.dis.blit(self._get_SB(rd_hover=True), 
+                          (self.BOARD_SIZE, 0))
         elif (x > self.SB_MM_X_ABS and 
             x < self.SB_MM_X_ABS + self.SB_BTN_WIDTH and 
             y > self.SB_MM_Y_ABS and 
@@ -357,6 +401,16 @@ class GameGUI:
             y > self.SB_FB_Y_ABS and 
             y < self.SB_FB_Y_ABS + self.SB_BTN_HEIGHT): # Flip Board
                 self.board_flipped = not self.board_flipped
+            elif (x > self.SB_UD_X_ABS and 
+            x < self.SB_UD_X_ABS + self.SB_UD_WIDTH and 
+            y > self.SB_UD_Y_ABS and 
+            y < self.SB_UD_Y_ABS + self.SB_BTN_HEIGHT): # Undo Move
+                self.game.undo_move()
+            elif (x > self.SB_RD_X_ABS and 
+            x < self.SB_RD_X_ABS + self.SB_RD_WIDTH and 
+            y > self.SB_RD_Y_ABS and 
+            y < self.SB_RD_Y_ABS + self.SB_BTN_HEIGHT): # Redo Move
+                self.game.redo_move()
             elif (x > self.SB_MM_X_ABS and 
             x < self.SB_MM_X_ABS + self.SB_BTN_WIDTH and 
             y > self.SB_MM_Y_ABS and 

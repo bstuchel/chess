@@ -4,10 +4,7 @@ and control flow for the application.
 
 To Do:
     - Add AI for singleplayer games
-    - Add current game score (number of pieces captured)
     - Add a game clock
-    - Add ability to flip the board
-    - Add ability to undo moves
     - Add a display of previous moves
 """
 import pygame
