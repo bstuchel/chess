@@ -292,10 +292,7 @@ class GameGUI:
         rank = 7
         file = 0
         in_hand_char = None
-        board_fen = self.game.board.board_fen()
-        if self.board_flipped:
-            board_fen = self.game.board.transform(chess.flip_vertical).transform(chess.flip_horizontal).board_fen()
-        for char in board_fen:
+        for char in self.game.board.board_fen():
             if char == '/':
                 file = 0
                 rank -= 1
@@ -307,6 +304,9 @@ class GameGUI:
             else:
                 x = file * self.SQUARE_SIZE
                 y = (7 - rank) * self.SQUARE_SIZE
+                if self.board_flipped:
+                    x = (7 - file) * self.SQUARE_SIZE
+                    y = rank * self.SQUARE_SIZE
                 self.dis.blit(self.SPRITES[char], (x, y))
                 file += 1
 
@@ -374,6 +374,9 @@ class GameGUI:
                 file = pos[0] // self.SQUARE_SIZE
                 rank = 7 - (pos[1] // self.SQUARE_SIZE)
                 if file > -1 and file < 8 and rank > -1 and rank < 8:
+                    if self.board_flipped:
+                        file = 7 - file
+                        rank = 7 - rank
                     self.in_hand = (file, rank)
             return 0
 
@@ -386,6 +389,9 @@ class GameGUI:
         file = pos[0] // self.SQUARE_SIZE
         rank = 7 - (pos[1] // self.SQUARE_SIZE)
         if file > -1 and file < 8 and rank > -1 and rank < 8:
+            if self.board_flipped:
+                file = 7 - file
+                rank = 7 - rank
             promo_piece = None
             if self.game.is_promotion(self.in_hand, (file, rank)):
                 promo_piece = self._choose_promotion((file, rank))
