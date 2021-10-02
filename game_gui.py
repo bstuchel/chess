@@ -1,5 +1,5 @@
-""" File: gui.py
-This file contains the GUI for the chess application
+""" File: game_gui.py
+This file contains the GUI for the chess game
 """
 import chess
 import pygame
@@ -64,12 +64,12 @@ class GameGUI:
 
         # Sidebar
         self.SB_WIDTH = self.WIDTH - self.BOARD_SIZE
-        self.SB_MARGIN = self.SB_WIDTH // 16
+        self.SB_MARGIN = self.SB_WIDTH//15 if self.SB_WIDTH//15 < 10 else 10
         self.SB_BTN_WIDTH = self.SB_WIDTH - 2 * self.SB_MARGIN
-        self.SB_BTN_HEIGHT = self.SB_BTN_WIDTH // 3
+        self.SB_BTN_HEIGHT = self.BOARD_SIZE // 15
         # Score
-        self.SB_SC_HEAD_FONT = self.SB_WIDTH // 8
-        self.SB_SC_LABEL_FONT = self.SB_WIDTH // 10
+        self.SB_SC_HEAD_FONT = self.SB_WIDTH//8 if self.SB_WIDTH//8 < 30 else 30
+        self.SB_SC_LABEL_FONT = self.SB_WIDTH//10 if self.SB_WIDTH//10 < 22 else 22
         self.SB_SC_HEAD_Y = self.BOARD_SIZE // 3
         self.SB_SC_LABEL_Y = (self.SB_SC_HEAD_Y + self.SB_SC_HEAD_FONT + 
                               self.SB_MARGIN)
@@ -449,7 +449,8 @@ class GameGUI:
             promo_piece = None
             if self.game.is_promotion(self.in_hand, (file, rank)):
                 promo_piece = self._choose_promotion((file, rank))
-            self.game.move(self.in_hand, (file, rank), promo_piece)
+            move = self.game.get_move(self.in_hand, (file, rank), promo_piece)
+            self.game.move(move)
         self.in_hand = None
 
     def _choose_promotion(self, square):
@@ -470,7 +471,7 @@ class GameGUI:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-            if event.type == pygame.MOUSEBTNUP and event.BTN == 1:
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 x, y = event.pos
                 click_file = x // self.SQUARE_SIZE
                 click_rank = 7 - (y // self.SQUARE_SIZE)

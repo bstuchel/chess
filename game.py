@@ -11,60 +11,65 @@ class Game:
         self.captured_value = [0, 0]
         self.undone_moves = deque()
 
-    def move(self, from_coord, to_coord, promotion=None):
-        """ Creates a move object and pushed the move if it is legal """
+    def get_move(self, from_coord, to_coord, promotion=None):
+        """ Creates a move object whether or not it's legal """
         from_square = chess.square(from_coord[0], from_coord[1])
         to_square = chess.square(to_coord[0], to_coord[1])
-        move = chess.Move(from_square, to_square, promotion)
+        return chess.Move(from_square, to_square, promotion)
+
+    def move(self, move):
+        """ Make the move if it is legal """
         if move in self.board.legal_moves:
-            if self.board.is_capture(move):
-                captured_piece = self.board.piece_at(to_square)
-                if not captured_piece: # En passant
-                    captured_piece = chess.Piece(chess.PAWN, not self.board.turn)
-                self.capture(captured_piece)
+            self.capture(move)
             self.board.push(move)
             self.undone_moves.clear()
 
-    def capture(self, piece):
-        """ Add the captured piece's value to the game score """
-        color = 0 if piece.color == chess.WHITE else 1
-        if piece.piece_type == chess.QUEEN: val = 9
-        elif piece.piece_type == chess.ROOK: val = 5
-        elif piece.piece_type == chess.BISHOP: val = 3
-        elif piece.piece_type == chess.KNIGHT: val = 3
-        elif piece.piece_type == chess.PAWN: val = 1
-        self.captured_value[color] += val
+    def capture(self, move):
+        """ If the move is a capture, add the captured piece's value to the 
+        game score 
+        """
+        if self.board.is_capture(move):
+            color = 0 if self.board.turn == chess.BLACK else 1
+            captured_piece = self.board.piece_at(move.to_square)
+            if captured_piece:
+                if captured_piece.piece_type == chess.QUEEN: val = 9
+                elif captured_piece.piece_type == chess.ROOK: val = 5
+                elif captured_piece.piece_type == chess.BISHOP: val = 3
+                elif captured_piece.piece_type == chess.KNIGHT: val = 3
+                else: val = 1
+            else: # En passant
+                val = 1
+            self.captured_value[color] += val
+
+    def uncapture(self, move):
+        """ Subtract the captured piece's value from the game score """
+        if self.board.is_capture(move):
+            color = 0 if self.board.turn == chess.BLACK else 1
+            captured_piece = self.board.piece_at(move.to_square)
+            if captured_piece:
+                if captured_piece.piece_type == chess.QUEEN: val = 9
+                elif captured_piece.piece_type == chess.ROOK: val = 5
+                elif captured_piece.piece_type == chess.BISHOP: val = 3
+                elif captured_piece.piece_type == chess.KNIGHT: val = 3
+                else: val = 1
+            else: # En passant
+                val = 1
+            self.captured_value[color] -= val
 
     def undo_move(self):
-        """ Undoes the last move made and adds it to the undone move stack """
+        """ Undoes the last move made and adds it to the undone moves
+        stack 
+        """
         if self.board.ply() != 0:
             move = self.board.pop()
             self.undone_moves.append(move)
-            if self.board.is_capture(move):
-                    captured_piece = self.board.piece_at(move.to_square)
-                    if not captured_piece: # En passant
-                        captured_piece = chess.Piece(chess.PAWN, not self.board.turn)
-                    self.uncapture(captured_piece)
-
-    def uncapture(self, piece):
-        """ Subtract the captured piece's value from the game score """
-        color = 0 if piece.color == chess.WHITE else 1
-        if piece.piece_type == chess.QUEEN: val = 9
-        elif piece.piece_type == chess.ROOK: val = 5
-        elif piece.piece_type == chess.BISHOP: val = 3
-        elif piece.piece_type == chess.KNIGHT: val = 3
-        elif piece.piece_type == chess.PAWN: val = 1
-        self.captured_value[color] -= val
+            self.uncapture(move)
 
     def redo_move(self):
         """ Redoes the last move that was undone """
         if self.undone_moves:
             move = self.undone_moves.pop()
-            if self.board.is_capture(move):
-                captured_piece = self.board.piece_at(move.to_square)
-                if not captured_piece: # En passant
-                    captured_piece = chess.Piece(chess.PAWN, not self.board.turn)
-                self.capture(captured_piece)
+            self.capture(move)
             self.board.push(move)
 
     def is_promotion(self, from_coord, to_coord):

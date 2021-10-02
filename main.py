@@ -5,7 +5,6 @@ and control flow for the application.
 To Do:
     - Add AI for singleplayer games
     - Add a game clock
-    - Add a display of previous moves
 """
 import pygame
 pygame.init()

@@ -1,5 +1,5 @@
-""" File: gui.py
-This file contains the GUI for the chess application
+""" File: menu_gui.py
+This file contains the GUI for the chess menu
 """
 import pygame
 
