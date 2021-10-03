@@ -1,10 +1,11 @@
 """ File: menu_gui.py
 This file contains the GUI for the chess menu
 """
+from gui import GUI
 import pygame
 
 
-class MenuGUI:
+class MenuGUI(GUI):
     # Define Colors
     DARK_GRAY = (49, 46, 43)
     GREEN = (118, 150, 86)
@@ -40,46 +41,37 @@ class MenuGUI:
         """ Updates the display by clearing the display to the blank board 
         surface.  Pieces are then drawn to the board including pieces held by 
         the user.
-        pos: Tuple containing the x and y coordinates of the cursor
+        :param tuple(int, int) pos: Tuple containing the x and y coordinates 
+            of the cursor
         """
         self.dis.fill(self.DARK_GRAY)
 
         # Write Heading
-        header_label = self.HEADING_FONT.render("Welcome to Chess!", True, 
-                                                self.WHITE)
-        width = header_label.get_width()
-        height = header_label.get_height()
-        self.dis.blit(header_label, [self.WIDTH // 2 - width // 2, 
-                                      self.HEADING_Y - height // 2])
+        self.draw_label(self.WIDTH // 2, self.HEADING_Y, self.HEADING_FONT, 
+                        self.WHITE, "Welcome to Chess!", self.dis)
 
         # Draw Button
         x, y = pos
-        if (x > self.BUTTON_X and 
-            x < self.BUTTON_X + self.BUTTON_WIDTH and 
-            y > self.BUTTON_Y and 
-            y < self.BUTTON_Y + self.BUTTON_HEIGHT):
-            pygame.draw.rect(self.dis, self.LIGHT_GREEN,
-                             (self.BUTTON_X, self.BUTTON_Y,
-                              self.BUTTON_WIDTH, self.BUTTON_HEIGHT))
-        else:
-            pygame.draw.rect(self.dis, self.GREEN,
-                             (self.BUTTON_X, self.BUTTON_Y,
-                              self.BUTTON_WIDTH, self.BUTTON_HEIGHT))
-        header_label = self.LABEL_FONT.render("New Game", True, self.WHITE)
-        width = header_label.get_width()
-        height = header_label.get_height()
-        self.dis.blit(header_label, [self.WIDTH // 2 - width // 2, 
-                                      self.HEIGHT // 2 - height // 2])
+        hover = (self.BUTTON_X < x < self.BUTTON_X + self.BUTTON_WIDTH and 
+                 self.BUTTON_Y < y < self.BUTTON_Y + self.BUTTON_HEIGHT)
+
+        self.draw_button(self.BUTTON_X, self.BUTTON_Y, self.BUTTON_WIDTH, 
+                         self.BUTTON_HEIGHT, self.LIGHT_GREEN, self.GREEN, 
+                         self.LABEL_FONT, self.WHITE, "New Game", self.dis, 
+                         hover)
 
         pygame.display.update()
 
     def click(self, pos):
         """ Returns the value 1 if the button is clicked 
-        pos: Tuple containing the x and y coordinates of the cursor
+        :param tuple(int, int) pos: Tuple containing the x and y coordinates 
+            of the cursor
+        :return: The value 1 if the button is clicked otherwise 0
+        :rtype: int
         """
         x, y = pos
-        if (x > self.BUTTON_X and 
-            x < self.BUTTON_X + self.BUTTON_WIDTH and 
-            y > self.BUTTON_Y and 
-            y < self.BUTTON_Y + self.BUTTON_HEIGHT):
+        if (self.BUTTON_X < x < self.BUTTON_X + self.BUTTON_WIDTH and 
+            self.BUTTON_Y < y < self.BUTTON_Y + self.BUTTON_HEIGHT):
             return 1
+        else:
+            return 0

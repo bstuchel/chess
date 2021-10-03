@@ -12,13 +12,23 @@ class Game:
         self.undone_moves = deque()
 
     def get_move(self, from_coord, to_coord, promotion=None):
-        """ Creates a move object whether or not it's legal """
+        """ Creates a move object whether or not it's legal 
+        :param tuple(int, int) from_coord: The coordinate of the piece's 
+            starting location (both coords must be 0-7 inclusive)        
+        :param tuple(int, int) to_coord: The coordinate of the piece's ending
+            location (both coords must be 0-7 inclusive)
+        :param chess.Piece or None promotion: Piece to promote to
+        :return: The chess move given starting and ending coords
+        :rtype: chess.Move
+        """
         from_square = chess.square(from_coord[0], from_coord[1])
         to_square = chess.square(to_coord[0], to_coord[1])
         return chess.Move(from_square, to_square, promotion)
 
     def move(self, move):
-        """ Make the move if it is legal """
+        """ Make the move if it is legal 
+        :param chess.Move move: The move to attempt
+        """
         if move in self.board.legal_moves:
             self.capture(move)
             self.board.push(move)
@@ -27,6 +37,7 @@ class Game:
     def capture(self, move):
         """ If the move is a capture, add the captured piece's value to the 
         game score 
+        :param chess.Move move: The move to be checked for captures
         """
         if self.board.is_capture(move):
             color = 0 if self.board.turn == chess.BLACK else 1
@@ -42,7 +53,10 @@ class Game:
             self.captured_value[color] += val
 
     def uncapture(self, move):
-        """ Subtract the captured piece's value from the game score """
+        """ If the move is a capture, subtract the captured piece's value 
+        from the game score 
+        :param chess.Move move: The move to be checked for captures
+        """
         if self.board.is_capture(move):
             color = 0 if self.board.turn == chess.BLACK else 1
             captured_piece = self.board.piece_at(move.to_square)
@@ -73,7 +87,14 @@ class Game:
             self.board.push(move)
 
     def is_promotion(self, from_coord, to_coord):
-        """ Returns whether or not the piece can be promted """
+        """ Returns whether or not the piece can be promted 
+        :param tuple(int, int) from_coord: The coordinate of the piece's 
+            starting location (both coords must be 0-7 inclusive)        
+        :param tuple(int, int) to_coord: The coordinate of the piece's ending
+            location (both coords must be 0-7 inclusive)
+        :return: The True if the move promotes a pawn
+        :rtype: bool
+        """
         from_square = chess.square(from_coord[0], from_coord[1])
         piece = self.board.piece_at(from_square)
         if not piece:
@@ -82,5 +103,8 @@ class Game:
         return piece.piece_type == chess.PAWN and to_coord[1] == promo_rank
 
     def is_game_over(self):
-        """ Returns whether the game is over """
+        """ Returns whether the game is over 
+        :return: The True if the game is over
+        :rtype: bool
+        """
         return bool(self.board.outcome())

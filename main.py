@@ -9,6 +9,7 @@ To Do:
 import pygame
 pygame.init()
 
+from ai_game import AIGame
 from enum import Enum
 from game import Game
 from game_gui import GameGUI
@@ -45,7 +46,11 @@ def main():
 
 
 def play(dis):
-    """ Sets up and runs the chess game """
+    """ Sets up and runs the chess game
+    :param pygame.Surface dis: The display of the application
+    :return: The game state after completion
+    :rtype: GameState
+    """
     game = Game()
     gui = GameGUI(dis, game)
     pos = (0, 0)
@@ -100,7 +105,11 @@ def play(dis):
 
 
 def menu(dis):
-    """ Sets up and shows the menu for the application """
+    """ Sets up and shows the menu for the application 
+    :param pygame.Surface dis: The display of the application
+    :return: The game state after completion
+    :rtype: GameState
+    """
     gui = MenuGUI(dis)
     pos = (0, 0)
     gui.update_display(pos)
