@@ -430,7 +430,7 @@ class GameGUI(GUI):
             if self.game.is_promotion(self.in_hand, (file, rank)):
                 promo_piece = self._choose_promotion((file, rank))
             move = self.game.get_move(self.in_hand, (file, rank), promo_piece)
-            self.game.move(move)
+            self.game.user_move(move)
         self.in_hand = None
 
     def _choose_promotion(self, square):

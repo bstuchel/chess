@@ -26,9 +26,15 @@ class MenuGUI(GUI):
         # Menu Data
         self.HEADING_Y = self.HEIGHT // 4
         self.BUTTON_HEIGHT = self.HEIGHT // 10
-        self.BUTTON_WIDTH = 3 * self.BUTTON_HEIGHT
-        self.BUTTON_X = self.WIDTH // 2 - self.BUTTON_WIDTH // 2
-        self.BUTTON_Y = self.HEIGHT // 2 - self.BUTTON_HEIGHT // 2
+        self.BUTTON_WIDTH = 4 * self.BUTTON_HEIGHT
+        self.MARGIN = self.HEIGHT // 20 if self.HEIGHT // 20 < 15 else 15
+        # Multiplayer Button
+        self.MP_BTN_X = self.WIDTH // 2 - self.BUTTON_WIDTH // 2
+        self.MP_BTN_Y = self.HEIGHT//2 - self.MARGIN//2 - self.BUTTON_HEIGHT
+        # Singleplayer Button
+        self.SP_BTN_X = self.WIDTH // 2 - self.BUTTON_WIDTH // 2
+        self.SP_BTN_Y = self.HEIGHT // 2 + self.MARGIN // 2
+
 
     def _define_fonts(self):
         """ Define the fonts used in the menu GUI """
@@ -50,15 +56,24 @@ class MenuGUI(GUI):
         self.draw_label(self.WIDTH // 2, self.HEADING_Y, self.HEADING_FONT, 
                         self.WHITE, "Welcome to Chess!", self.dis)
 
-        # Draw Button
+        # Draw Multiplayer Button
         x, y = pos
-        hover = (self.BUTTON_X < x < self.BUTTON_X + self.BUTTON_WIDTH and 
-                 self.BUTTON_Y < y < self.BUTTON_Y + self.BUTTON_HEIGHT)
+        mp_hover = (self.MP_BTN_X < x < self.MP_BTN_X + self.BUTTON_WIDTH and
+                    self.MP_BTN_Y < y < self.MP_BTN_Y + self.BUTTON_HEIGHT)
 
-        self.draw_button(self.BUTTON_X, self.BUTTON_Y, self.BUTTON_WIDTH, 
+        self.draw_button(self.MP_BTN_X, self.MP_BTN_Y, self.BUTTON_WIDTH, 
                          self.BUTTON_HEIGHT, self.LIGHT_GREEN, self.GREEN, 
-                         self.LABEL_FONT, self.WHITE, "New Game", self.dis, 
-                         hover)
+                         self.LABEL_FONT, self.WHITE, "Multiplayer Game", 
+                         self.dis, mp_hover)
+
+        # Draw Singleplayer Button
+        sp_hover = (self.SP_BTN_X < x < self.SP_BTN_X + self.BUTTON_WIDTH and 
+                 self.SP_BTN_Y < y < self.SP_BTN_Y + self.BUTTON_HEIGHT)
+
+        self.draw_button(self.SP_BTN_X, self.SP_BTN_Y, self.BUTTON_WIDTH, 
+                         self.BUTTON_HEIGHT, self.LIGHT_GREEN, self.GREEN, 
+                         self.LABEL_FONT, self.WHITE, "Singleplayer Game", 
+                         self.dis, sp_hover)
 
         pygame.display.update()
 
@@ -70,8 +85,11 @@ class MenuGUI(GUI):
         :rtype: int
         """
         x, y = pos
-        if (self.BUTTON_X < x < self.BUTTON_X + self.BUTTON_WIDTH and 
-            self.BUTTON_Y < y < self.BUTTON_Y + self.BUTTON_HEIGHT):
+        if (self.MP_BTN_X < x < self.MP_BTN_X + self.BUTTON_WIDTH and 
+            self.MP_BTN_Y < y < self.MP_BTN_Y + self.BUTTON_HEIGHT):
             return 1
+        elif (self.SP_BTN_X < x < self.SP_BTN_X + self.BUTTON_WIDTH and 
+            self.SP_BTN_Y < y < self.SP_BTN_Y + self.BUTTON_HEIGHT):
+            return 2
         else:
             return 0

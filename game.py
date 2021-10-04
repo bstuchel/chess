@@ -11,6 +11,12 @@ class Game:
         self.captured_value = [0, 0]
         self.undone_moves = deque()
 
+    def reset(self):
+        """ Resets the game board and variables """
+        self.board.reset()
+        self.captured_value = [0, 0]
+        self.undone_moves.clear()
+
     def get_move(self, from_coord, to_coord, promotion=None):
         """ Creates a move object whether or not it's legal 
         :param tuple(int, int) from_coord: The coordinate of the piece's 
@@ -25,6 +31,9 @@ class Game:
         to_square = chess.square(to_coord[0], to_coord[1])
         return chess.Move(from_square, to_square, promotion)
 
+    def user_move(self, move):
+        self.move(move)
+
     def move(self, move):
         """ Make the move if it is legal 
         :param chess.Move move: The move to attempt
@@ -33,6 +42,8 @@ class Game:
             self.capture(move)
             self.board.push(move)
             self.undone_moves.clear()
+            return True
+        return False
 
     def capture(self, move):
         """ If the move is a capture, add the captured piece's value to the 

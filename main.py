@@ -24,8 +24,9 @@ WINDOW_HEIGHT = 680
 class GameState(Enum):
     """ Type used to control the gamestate """
     QUIT = -1
-    GAME = 0
-    MENU = 1
+    MENU = 0
+    MULTIPLAYER = 1
+    SINGLEPPLAYER = 2
 
 
 def main():
@@ -34,8 +35,11 @@ def main():
     pygame.display.set_caption('Chess')
     game_state = GameState.MENU
     while True:
-        if game_state == GameState.GAME:
-            game_state = play(dis)
+        if game_state == GameState.SINGLEPPLAYER:
+            game_state = singleplayer(dis)
+
+        elif game_state == GameState.MULTIPLAYER:
+            game_state = multiplayer(dis)
 
         if game_state == GameState.MENU:
             game_state = menu(dis)
@@ -45,13 +49,51 @@ def main():
             return
 
 
-def play(dis):
+def menu(dis):
+    """ Sets up and shows the menu for the application 
+    :param pygame.Surface dis: The display of the application
+    :return: The game state after completion
+    :rtype: GameState
+    """
+    gui = MenuGUI(dis)
+    pos = (0, 0)
+    gui.update_display(pos)
+
+    # Menu Loop
+    while True:
+        pygame.time.delay(15)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return GameState.QUIT
+
+            if event.type == pygame.MOUSEMOTION:
+                gui.update_display(event.pos)
+
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                choice = gui.click(event.pos)
+                if choice == 1:
+                    return GameState.MULTIPLAYER
+                if choice == 2:
+                    return GameState.SINGLEPPLAYER
+
+
+def multiplayer(dis):
+    game = Game()
+    return play(dis, game)
+
+
+def singleplayer(dis):
+    game = AIGame()
+    return play(dis, game)
+
+
+def play(dis, game):
     """ Sets up and runs the chess game
     :param pygame.Surface dis: The display of the application
     :return: The game state after completion
     :rtype: GameState
     """
-    game = Game()
     gui = GameGUI(dis, game)
     pos = (0, 0)
     gui.update_display(pos)
@@ -68,7 +110,7 @@ def play(dis):
 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 result = gui.click(event.pos)
-                if result == 1: return GameState.GAME
+                if result == 1: game.reset()
                 if result == 2: return GameState.MENU
                 need_update = True
 
@@ -101,34 +143,7 @@ def play(dis):
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 choice = gui.menu_click(event.pos)
                 if choice == 1:
-                    return GameState.GAME
-
-
-def menu(dis):
-    """ Sets up and shows the menu for the application 
-    :param pygame.Surface dis: The display of the application
-    :return: The game state after completion
-    :rtype: GameState
-    """
-    gui = MenuGUI(dis)
-    pos = (0, 0)
-    gui.update_display(pos)
-
-    # Menu Loop
-    while True:
-        pygame.time.delay(15)
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return GameState.QUIT
-
-            if event.type == pygame.MOUSEMOTION:
-                gui.update_display(event.pos)
-
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                choice = gui.click(event.pos)
-                if choice == 1:
-                    return GameState.GAME
+                    return GameState.MULTIPLAYER
 
 
 if __name__ == "__main__":
