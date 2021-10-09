@@ -1,10 +1,6 @@
 """ File: main.py
 This is the main file for the chess application.  It contains the mainloop 
 and control flow for the application.
-
-To Do:
-    - Add AI for singleplayer games
-    - Add a game clock
 """
 import pygame
 pygame.init()
@@ -143,7 +139,8 @@ def play(dis, game):
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 choice = gui.menu_click(event.pos)
                 if choice == 1:
-                    return GameState.MULTIPLAYER
+                    game.reset()
+                    return play(dis, game)
 
 
 if __name__ == "__main__":
