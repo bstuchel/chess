@@ -54,8 +54,7 @@ class Game:
             color = 0 if self.board.turn == chess.BLACK else 1
             captured_piece = self.board.piece_at(move.to_square)
             if captured_piece:
-                if captured_piece.piece_type == chess.KING: val = 100
-                elif captured_piece.piece_type == chess.QUEEN: val = 9
+                if captured_piece.piece_type == chess.QUEEN: val = 9
                 elif captured_piece.piece_type == chess.ROOK: val = 5
                 elif captured_piece.piece_type == chess.BISHOP: val = 3
                 elif captured_piece.piece_type == chess.KNIGHT: val = 3
