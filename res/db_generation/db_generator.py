@@ -1,3 +1,9 @@
+""" File: db_generator.py
+
+This file contains the opening database generator given a .pgn file.  
+Games using portable game notation (PGN) can be downloaded 
+at https://www.ficsgames.org/download.html
+"""
 import chess
 import mysql.connector
 import os
@@ -107,4 +113,7 @@ def add_to_database(move_list, cursor):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    if len(sys.argv) < 2:
+        print("Usage: python db_generator.py [pgn file name]")
+    else:
+        main(sys.argv[1])
