@@ -1,6 +1,13 @@
 """ File: main.py
 This is the main file for the chess application.  It contains the mainloop 
 and control flow for the application.
+
+To Do:
+Improve position evaluation by adding the following parameters:
+    - Pieces Captured (already added)   - 100x piece value
+    - King Safety                       - Castle worth 100
+    - Possible Moves                    - 10 points for each legal move
+    - Pawn Rank                         - 30 points for each rank a pawn has advanced
 """
 import pygame
 pygame.init()

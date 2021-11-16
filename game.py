@@ -37,13 +37,16 @@ class Game:
     def move(self, move):
         """ Make the move if it is legal 
         :param chess.Move move: The move to attempt
+        :return: True if the move is legal
+        :rtype: bool
         """
-        if move in self.board.legal_moves:
-            self.capture(move)
-            self.board.push(move)
-            self.undone_moves.clear()
-            return True
-        return False
+        if move not in self.board.legal_moves:
+            return False
+
+        self.capture(move)
+        self.board.push(move)
+        self.undone_moves.clear()
+        return True
 
     def capture(self, move):
         """ If the move is a capture, add the captured piece's value to the 
