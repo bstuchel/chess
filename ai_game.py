@@ -5,7 +5,6 @@ moves for singleplayer chess games
 import chess
 from game import Game
 import mysql.connector
-import random
 
 class AIGame(Game):
     def __init__(self):
@@ -31,18 +30,6 @@ class AIGame(Game):
                 _, ai_move = self.minimax(4, -1000, 1000, self.board.turn==chess.WHITE)
             self.move(ai_move)
 
-    def random_move(self):
-        """ Get and return a random legal mvoe """
-        count = self.board.legal_moves.count()
-        if count == 0:
-            return
-        move_idx = random.choice(range(count))
-        idx = 0
-        for move in self.board.legal_moves:
-            if move_idx == idx:
-                return move
-            idx += 1
-
     def minimax(self, depth, alpha, beta, is_white):
         """ Recursively find and return the best move for the turn color 
         given position and depth using minimax with alpha beta pruning.  The 
@@ -53,7 +40,7 @@ class AIGame(Game):
         :param int beta: Max value for beta pruning
         :param bool is_white: True when it's white's turn to move
         :return: Maximum evaluation and the best move to make
-        :rtype: Tuple(int, chess.Move)
+        :rtype: tuple(int, chess.Move)
         """
         if depth == 0:
             return self.captured_value[1] - self.captured_value[0], None

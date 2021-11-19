@@ -14,6 +14,9 @@ UCI_FILENAME = "uci.txt"
 
 
 def main(pgn_filename):
+    """ Create an openings database using the given pgn file 
+    :param str pgn_filename: The name of the pgn file
+    """
     clear_db()
 
     cnx = mysql.connector.connect(
@@ -28,11 +31,8 @@ def main(pgn_filename):
     read_file = open(UCI_FILENAME, 'r')
     write_file = open("output.txt", 'w')
 
-    # max_line = 200
     i = 0
     for line in read_file:       
-        # if i > max_line:
-        #     break
         if i % 1000 == 0:
             print(i)
         i += 1
@@ -51,6 +51,7 @@ def main(pgn_filename):
 
 
 def clear_db():
+    """ Clear the opening database """
     cnx = mysql.connector.connect(
     host="localhost",
     user="root",
@@ -77,16 +78,24 @@ def clear_db():
     );\
     "
     cursor.execute(clear_call)
-    # cnx.commit()
     cursor.close()
     cnx.close()
 
 
 def convert_to_uci(pgn_filename):
+    """ Convert portable game notation (PGN) to universal chess 
+    interface (UCI) notation and output to UCI_FILENAME
+    :param str pgn_filename: The name of the pgn file
+    """
     os.system(f"pgn-extract.exe -Wuci --output {UCI_FILENAME} {pgn_filename}")
 
 
 def get_move_list(game_uci):
+    """ Create and return the move list for the given game 
+    :param str game_uci: The game moves in uci notation
+    :return: The list of the first 20 moves (10 for each side)
+    :rtype: list[str]
+    """
     move_list = game_uci.split(' ')[:-1]
     if len(move_list) > 20:
         move_list = move_list[:20]
@@ -99,15 +108,16 @@ def get_move_list(game_uci):
 
 
 def add_to_database(move_list, cursor):
+    """ Store the move made for each board FEN (Forsyth-Edwards Notation) 
+    :param list[str] move_list: The list of moves in uci notation 
+    :param mysql.connector.connect.cursor cursor: The cursor for the openings 
+        database
+    """
     board = chess.Board()
     last_fen = chess.STARTING_BOARD_FEN
     for move_uci in move_list:
-        # try:
         cursor.execute(f"INSERT IGNORE INTO fen (name) VALUES ('{last_fen}');")
         cursor.execute(f"INSERT INTO moves (name, fen) VALUES ('{move_uci}', '{last_fen}');")
-        # except mysql.connector.Error as err:
-        #     print(f"Failed creating database: {err}")
-        #     exit(1)
         board.push_uci(move_uci)
         last_fen = board.board_fen()
 
