@@ -16,8 +16,8 @@ Flip Board
 ![London Black](res/readme/london-black.png)  
 
 Example Game: Vepkhvishvili v. Swiecki (1989)  
-![Vepkhvishvili-Sweicki 1](res/readme/vepkhvishvili-sweicki1.png)  
-![Vepkhvishvili-Sweicki 2](res/readme/vepkhvishvili-sweicki2.png)  
-![Vepkhvishvili-Sweicki 3](res/readme/vepkhvishvili-sweicki3.png)  
+![Vepkhvishvili-Swiecki 1](res/readme/vepkhvishvili-swiecki1.png)  
+![Vepkhvishvili-Swiecki 2](res/readme/vepkhvishvili-swiecki2.png)  
+![Vepkhvishvili-Swiecki 3](res/readme/vepkhvishvili-swiecki3.png)  
 
 
