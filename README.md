@@ -1,8 +1,8 @@
 # chess
-Chess app built in python using pygame
 This application features singleplayer and multiplayer chess powered by the python chess library and pygame.  The AI for singleplayer chess uses minimax with alpha-beta pruning and a depth set to 4.  Additionally, the first ten moves are made using a openings database containing 43,900 games.
 
 Application Screenshots:
+
 Menu
 ![Menu](res/readme/menu.png)
 
